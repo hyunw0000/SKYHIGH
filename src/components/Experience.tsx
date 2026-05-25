@@ -13,8 +13,8 @@ export default function Experience() {
         makeDefault 
         enablePan={false} 
         maxPolarAngle={Math.PI / 1.5} 
-        minDistance={10} 
-        maxDistance={30} 
+        minDistance={6} 
+        maxDistance={20} 
       />
       <Sky sunPosition={[100, 20, 100]} />
       <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />

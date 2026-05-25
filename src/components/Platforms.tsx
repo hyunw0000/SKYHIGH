@@ -3,7 +3,7 @@ import { InstancedRigidBodies, RapierRigidBody } from '@react-three/rapier';
 import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
 
-const PLATFORM_COUNT = 30; // Slightly reduced for better performance
+const PLATFORM_COUNT = 30; // Reverted count
 const VISIBLE_RANGE = 15;
 
 export default function Platforms() {

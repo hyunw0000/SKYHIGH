@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { RigidBody, RapierRigidBody, CuboidCollider } from '@react-three/rapier';
+import { RigidBody, RapierRigidBody, BallCollider } from '@react-three/rapier';
 import { useKeyboardControls, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '../stores/useGameStore';
@@ -55,7 +55,6 @@ export default function Player() {
       // 2. Project vectors onto the XZ plane (y=0) to keep movement horizontal
       cameraForward.y = 0;
       cameraForward.normalize();
-      // cameraRight is already horizontal since it's cross with (0,1,0)
 
       const moveVector = new THREE.Vector3(0, 0, 0);
       
@@ -67,19 +66,19 @@ export default function Player() {
       if (moveVector.length() > 0) {
         moveVector.normalize();
         
-        // Use a consistent impulse strength
-        const force = 40 * delta * 60; // Normalize by 60fps for consistency
+        // Reverted to 1% impulse strength (0.15)
+        const impulseStrength = 0.15 * delta * 60;
         
         body.current.applyImpulse({ 
-          x: moveVector.x * force, 
+          x: moveVector.x * impulseStrength, 
           y: 0, 
-          z: moveVector.z * force 
+          z: moveVector.z * impulseStrength 
         }, true);
       }
 
       // Manual Jump
       if (jump && isGrounded.current) {
-        body.current.setLinvel({ x: body.current.linvel().x, y: 15, z: body.current.linvel().z }, true);
+        body.current.setLinvel({ x: body.current.linvel().x, y: 10, z: body.current.linvel().z }, true);
         isGrounded.current = false;
       }
 
@@ -97,8 +96,6 @@ export default function Player() {
      * Camera Center (Follow target only)
      */
     smoothedCameraTarget.lerp(new THREE.Vector3(bodyPosition.x, bodyPosition.y + 2, bodyPosition.z), 5 * delta);
-    // Since we use OrbitControls, we just want it to keep following the player's position
-    // OrbitControls in Experience.tsx will handle the actual rotation/distance
     state.camera.lookAt(smoothedCameraTarget);
   });
 
@@ -119,22 +116,24 @@ export default function Player() {
       <RigidBody
         ref={body}
         colliders={false}
-        enabledRotations={[false, false, false]}
+        canSleep={false}
         position={[0, 1, 0]}
         friction={1}
+        linearDamping={1.0}
+        angularDamping={1.0}
         onCollisionEnter={onCollisionEnter}
         onCollisionExit={onCollisionExit}
       >
-        <CuboidCollider args={[0.5, 0.5, 0.5]} />
+        <BallCollider args={[0.4]} />
         <mesh ref={mesh} castShadow>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#3498db" />
+          <sphereGeometry args={[0.4, 32, 32]} />
+          <meshStandardMaterial color="#3498db" roughness={0.1} metalness={0.5} />
         </mesh>
       </RigidBody>
       
       {/* Blob Shadow - Optimized */}
       <ContactShadows 
-        position={[0, -0.45, 0]} 
+        position={[0, -0.4, 0]} 
         opacity={0.4} 
         scale={5} 
         blur={1.5} 

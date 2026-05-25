@@ -22,7 +22,7 @@ export default function Interface() {
               <Play size={24} fill="currentColor" /> START GAME
             </button>
             <div className="controls-hint">
-              WASD or Arrow Keys to move
+              WASD: Move | SPACE: Jump | MOUSE: Rotate View
             </div>
           </div>
         </div>
