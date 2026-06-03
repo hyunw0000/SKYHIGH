@@ -3,15 +3,15 @@ import { InstancedRigidBodies } from '@react-three/rapier';
 import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
 
-const PLATFORM_COUNT = 40;
-const VISIBLE_RANGE = 20;
+const PLATFORM_COUNT = 50;
+const SPACING = 4;
 
 const NEON_COLORS = [
-  '#ff00ff', // Magenta
+  '#ffffff', // White
   '#00ffff', // Cyan
+  '#ff00ff', // Magenta
   '#00ff00', // Lime
   '#ffff00', // Yellow
-  '#ff4d00', // Orange
 ];
 
 export default function Platforms() {
@@ -19,29 +19,49 @@ export default function Platforms() {
   const score = useGameStore((state) => state.score);
 
   const instances = useMemo(() => {
-    const currentLevel = Math.floor(score / 5);
-    const startLevel = Math.max(0, currentLevel - VISIBLE_RANGE);
-    const endLevel = startLevel + PLATFORM_COUNT;
+    // We want a stable set of platforms around the current score
+    const currentLevel = Math.floor(score / SPACING);
+    const startLevel = Math.max(1, currentLevel - 10);
     
     const items = [];
-    for (let i = startLevel; i < endLevel; i++) {
-      if (i === 0) continue;
+    for (let i = 0; i < PLATFORM_COUNT; i++) {
+      const levelIndex = startLevel + i;
+      const seed = levelIndex * 15485863;
+      
+      let x = 0;
+      let z = 0;
+      let scaleX = 4;
+      let scaleZ = 4;
+      let colorStr = '#ffffff';
 
-      const seed = i * 15485863;
-      const angle = (seed % 1000) / 1000 * Math.PI * 2;
-      const radius = 3 + (Math.abs(Math.sin(seed * 0.5)) * 10);
-      
-      const x = Math.sin(angle) * radius;
-      const z = Math.cos(angle) * radius;
-      
-      const colorIndex = Math.abs(Math.floor(Math.sin(seed) * NEON_COLORS.length));
-      
+      if (levelIndex <= 10) {
+        // Easy staircase
+        const angle = levelIndex * 0.8;
+        const radius = 5;
+        x = Math.sin(angle) * radius;
+        z = Math.cos(angle) * radius;
+        scaleX = 6;
+        scaleZ = 6;
+        colorStr = '#ffffff';
+      } else {
+        // Progressive difficulty
+        const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
+        const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
+        x = Math.sin(angle) * radius;
+        z = Math.cos(angle) * radius;
+        scaleX = 4 + Math.sin(seed * 2) * 1.5;
+        scaleZ = 4 + Math.cos(seed * 2) * 1.5;
+        
+        const colorIndex = Math.abs(Math.floor(Math.sin(seed) * NEON_COLORS.length));
+        colorStr = NEON_COLORS[colorIndex];
+      }
+
       items.push({
-        key: `platform-${i}`,
-        position: [x, i * 5, z],
+        key: `platform-${levelIndex}`,
+        position: [x, levelIndex * SPACING, z],
         rotation: [0, (seed % 100) / 100 * Math.PI, 0],
-        scale: [3 + Math.sin(seed) * 1, 0.5, 3 + Math.cos(seed) * 1],
-        color: new THREE.Color(NEON_COLORS[colorIndex]),
+        scale: [scaleX, 0.6, scaleZ],
+        color: new THREE.Color(colorStr),
       });
     }
     return items;
@@ -49,31 +69,36 @@ export default function Platforms() {
 
   useEffect(() => {
     if (meshRef.current) {
+      // Disable frustum culling to prevent disappearing platforms
+      meshRef.current.frustumCulled = false;
+      
       instances.forEach((instance, i) => {
         meshRef.current?.setColorAt(i, instance.color);
       });
-      meshRef.current.instanceColor!.needsUpdate = true;
+      if (meshRef.current.instanceColor) {
+        meshRef.current.instanceColor.needsUpdate = true;
+      }
     }
   }, [instances]);
 
   return (
     <InstancedRigidBodies
+      key={Math.floor(score / (SPACING * 5))} // Re-create rigid bodies periodically for stability
       instances={instances}
       type="fixed"
       colliders="cuboid"
-      name="platform"
     >
-      <instancedMesh ref={meshRef} args={[undefined, undefined, PLATFORM_COUNT]} castShadow receiveShadow>
+      <instancedMesh 
+        ref={meshRef} 
+        args={[undefined, undefined, PLATFORM_COUNT]} 
+        castShadow 
+        receiveShadow
+      >
         <boxGeometry args={[1, 1, 1]} />
         <meshStandardMaterial 
-          emissiveIntensity={1}
           toneMapped={false}
-          onBeforeCompile={(shader) => {
-            shader.fragmentShader = shader.fragmentShader.replace(
-              'vec4 diffuseColor = vec4( diffuse, opacity );',
-              'vec4 diffuseColor = vec4( diffuse, opacity );\n  gl_FragColor.rgb += instanceColor.rgb * 0.5;'
-            );
-          }}
+          emissive="#ffffff"
+          emissiveIntensity={0.2}
         />
       </instancedMesh>
     </InstancedRigidBodies>

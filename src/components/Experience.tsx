@@ -34,9 +34,9 @@ export default function Experience() {
         maxDistance={25} 
       />
       
-      <color attach="background" args={['#050505']} />
+      <color attach="background" args={['#0a0a1a']} />
       <Stars radius={100} depth={50} count={7000} factor={4} saturation={0} fade speed={1} />
-      <Environment preset="night" />
+      <Environment preset="city" />
 
       <Physics debug={false}>
         <Player />
@@ -45,23 +45,25 @@ export default function Experience() {
         {/* Initial floor/starting zone */}
         <RigidBody type="fixed" position={[0, -0.5, 0]} name="floor">
           <mesh receiveShadow>
-            <boxGeometry args={[30, 1, 30]} />
-            <meshStandardMaterial color="#1a1a1a" roughness={0.1} metalness={0.8} />
+            <boxGeometry args={[50, 1, 50]} />
+            <meshStandardMaterial color="#1a1a2e" roughness={0.3} metalness={0.8} />
           </mesh>
         </RigidBody>
       </Physics>
 
-      {/* Lighting - Neon Vibe */}
+      {/* Lighting - Brightened Neon Vibe */}
       <directionalLight
         castShadow
-        position={[10, 20, 10]}
-        intensity={0.5}
+        position={[10, 50, 20]}
+        intensity={2.0}
         shadow-mapSize={[1024, 1024]}
       />
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={1.2} />
+      <pointLight position={[-10, 20, -10]} intensity={1.5} color="#ff00ff" distance={100} />
+      <pointLight position={[10, 20, 10]} intensity={1.5} color="#00f2ff" distance={100} />
       
-      {/* Subtle fog for depth */}
-      <fog attach="fog" args={['#050505', 30, 100]} />
+      {/* Subtle fog for depth - Very light to ensure clear visibility */}
+      <fog attach="fog" args={['#0a0a1a', 60, 200]} />
     </>
   );
 }

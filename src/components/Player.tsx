@@ -74,7 +74,7 @@ export default function Player() {
 
       // Jump
       if (jump && isGrounded.current) {
-        body.current.applyImpulse({ x: 0, y: 8, z: 0 }, true);
+        body.current.applyImpulse({ x: 0, y: 12, z: 0 }, true);
         isGrounded.current = false;
       }
 
@@ -127,6 +127,7 @@ export default function Player() {
         friction={1}
         linearDamping={0.5}
         angularDamping={0.5}
+        gravityScale={2.5}
         onCollisionEnter={onCollisionEnter}
         onCollisionExit={onCollisionExit}
         name="player"
@@ -135,8 +136,8 @@ export default function Player() {
         <mesh castShadow>
           <sphereGeometry args={[0.5, 32, 32]} />
           <meshStandardMaterial 
-            color="#00f2ff" 
-            emissive="#00f2ff" 
+            color="#ff0000" 
+            emissive="#ff0000" 
             emissiveIntensity={2} 
             roughness={0} 
             metalness={1} 
@@ -147,7 +148,7 @@ export default function Player() {
         <mesh>
           <sphereGeometry args={[0.55, 32, 32]} />
           <meshStandardMaterial 
-            color="#00f2ff" 
+            color="#ff0000" 
             transparent 
             opacity={0.2} 
             blending={THREE.AdditiveBlending}
@@ -156,7 +157,7 @@ export default function Player() {
       </RigidBody>
       
       {/* Point light attached to player for neon effect */}
-      <pointLight position={[0, 0, 0]} intensity={2} color="#00f2ff" distance={5} />
+      <pointLight position={[0, 0, 0]} intensity={2} color="#ff0000" distance={5} />
     </group>
   );
 }
