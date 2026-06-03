@@ -111,9 +111,11 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       canSleep={false}
       position={[0, 5, 0]}
       friction={1}
+      restitution={0.2}
       linearDamping={0.5}
       angularDamping={0.5}
       gravityScale={2.5}
+      ccd={true} // Enable Continuous Collision Detection
       onCollisionEnter={onCollisionEnter}
       onCollisionExit={onCollisionExit}
       name="player"

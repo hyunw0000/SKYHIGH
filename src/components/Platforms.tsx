@@ -72,15 +72,19 @@ export default function Platforms() {
       instances.forEach((instance, i) => {
         meshRef.current?.setColorAt(i, instance.color);
       });
+      
       if (meshRef.current.instanceColor) {
         meshRef.current.instanceColor.needsUpdate = true;
       }
+
+      // Crucial: compute bounding volumes for instanced meshes
+      meshRef.current.computeBoundingBox();
+      meshRef.current.computeBoundingSphere();
     }
   }, [instances]);
 
   return (
     <InstancedRigidBodies
-      key={Math.floor(score / (SPACING * 10))} // Stable recycling every 10 platforms
       instances={instances}
       type="fixed"
       colliders="cuboid"
@@ -95,7 +99,7 @@ export default function Platforms() {
         <meshStandardMaterial 
           toneMapped={false}
           emissive="#ffffff"
-          emissiveIntensity={0.2}
+          emissiveIntensity={0.5} // Increased visibility
         />
       </instancedMesh>
     </InstancedRigidBodies>

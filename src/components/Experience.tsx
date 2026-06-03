@@ -68,13 +68,13 @@ export default function Experience() {
       <Stars radius={100} depth={50} count={7000} factor={4} saturation={0} fade speed={1} />
       <Environment preset="city" />
 
-      <Physics debug={false}>
+      <Physics debug={false} gravity={[0, -20, 0]}>
         <Player ref={playerRef} />
         <Platforms />
         
-        <RigidBody type="fixed" position={[0, -0.5, 0]} name="floor">
+        <RigidBody type="fixed" position={[0, -0.5, 0]} name="floor" colliders="cuboid">
           <mesh receiveShadow>
-            <boxGeometry args={[50, 1, 50]} />
+            <boxGeometry args={[100, 1, 100]} />
             <meshStandardMaterial color="#1a1a2e" roughness={0.3} metalness={0.8} />
           </mesh>
         </RigidBody>
