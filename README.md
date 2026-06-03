@@ -1,73 +1,36 @@
-# React + TypeScript + Vite
+# SKY HIGH: Neon Sphere Challenge
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. 게임 개요
+* **게임명**: SKY HIGH
+* **장르**: 3D 물리 기반 무한 수직 플랫폼 점프 게임
+* **플랫폼**: 웹 브라우저
+* **핵심 컨셉**: 밤하늘의 끝을 향해 올라가는 정교한 물리 컨트롤의 재미
+* **기획 의도**: 복잡한 설명 없이 'WASD와 스페이스바'만으로 즉각적인 재미를 제공하며, 물리 엔진을 활용한 정교한 관성 제어를 통해 플레이어의 도전 욕구를 자극함.
 
-Currently, two official plugins are available:
+## 2. 핵심 규칙 및 플레이 방식
+* **기본 규칙**: 플레이어는 공을 조작하여 무작위로 생성되는 발판을 딛고 위로 계속 올라가야 함. 발판 아래로 떨어지면 게임 오버.
+* **조작 방식**:
+    * **WASD**: 카메라 시점 기준 8방향 이동
+    * **Space**: 수직 점프
+    * **Mouse**: 360도 자유 시점 회전
+* **점수 산정**: 도달한 수직 높이가 곧 점수가 되며, 실시간으로 최고 기록과 경쟁함.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 3. 주요 재미 요소
+* **물리적 손맛**: 단순한 이동이 아닌 공의 '구르는 관성'과 '가속도'를 제어해야 하므로, 숙련도에 따른 성취감이 큼.
+* **무한한 도전**: 절차적 생성 알고리즘을 통해 매번 다른 위치에 발판이 생성되어 반복 플레이 시에도 새로움을 제공함.
+* **긴장감 넘치는 시점 조작**: 높이 올라갈수록 시점 회전을 통해 다음 발판의 위치를 빠르게 파악해야 하는 박진감을 선사함.
 
-## React Compiler
+## 4. 차별화 포인트
+* **Web-GL 기반 고퀄리티 3D 경험**: 일반적인 2D 미니게임과 달리 React Three Fiber와 Rapier Physics를 활용하여 웹에서도 콘솔 게임 같은 부드러운 물리 효과와 시각적 깊이감을 제공.
+* **시점 기반 이동 시스템**: 카메라가 보는 방향에 따라 이동 방향이 유동적으로 변하는 시스템을 채택하여, 조작의 직관성과 전략적 깊이를 동시에 확보.
+* **미니멀리즘 디자인**: 화려함보다는 '밤하늘'과 '네온' 컨셉의 깔끔한 UI/UX를 통해 플레이어가 조작 자체에 온전히 몰입할 수 있도록 설계.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 5. 화면 구성
+* **READY**: 게임 타이틀, 조작 가이드 안내, 'START' 버튼.
+* **PLAYING**: 우상단 현재 점수/최고 점수 표시, 3D 게임 화면.
+* **GAME OVER**: 최종 점수 리포트, 트로피 아이콘, 'RESTART' 버튼.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 6. 확장 아이디어
+* **다양한 공 스킨**: 점수에 따라 언락되는 구체 스킨
+* **아이템 시스템**: 점프력을 높여주는 '슈퍼 점프', 일정 구간 자동 상승하는 '로켓' 발판 등.
+* **멀티플레이 요소**: 다른 플레이어의 고스트 데이터와 함께 달리는 경쟁 모드.
