@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { KeyboardControls } from '@react-three/drei';
 import Experience from './components/Experience';
 import Interface from './components/Interface';
+import * as THREE from 'three';
 
 function App() {
   return (
@@ -17,11 +18,15 @@ function App() {
       <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
         <Canvas
           shadows
+          gl={{ antialias: true }}
+          onCreated={({ gl }) => {
+            gl.shadowMap.type = THREE.PCFShadowMap;
+          }}
           camera={{
             fov: 45,
             near: 0.1,
             far: 2000,
-            position: [10, 10, 10],
+            position: [20, 20, 20],
           }}
         >
           <Experience />

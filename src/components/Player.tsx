@@ -1,6 +1,6 @@
 import { useRef, useEffect, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { RigidBody, RapierRigidBody, BallCollider, CollisionPayload } from '@react-three/rapier';
+import { RigidBody, RapierRigidBody, BallCollider } from '@react-three/rapier';
 import { useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '../stores/useGameStore';
@@ -86,16 +86,16 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     }
   });
 
-  const onCollisionEnter = ({ other, contact }: CollisionPayload) => {
+  const onCollisionEnter = ({ other, contact }: any) => {
     if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
       // Check if the collision is roughly from below (normal pointing up)
-      if (contact.normal.y > 0.5) {
+      if (contact && contact.normal && contact.normal.y > 0.5) {
         isGrounded.current = true;
       }
     }
   };
 
-  const onCollisionExit = ({ other }: CollisionPayload) => {
+  const onCollisionExit = ({ other }: any) => {
     if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
       isGrounded.current = false;
     }

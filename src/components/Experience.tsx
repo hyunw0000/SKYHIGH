@@ -17,26 +17,34 @@ export default function Experience() {
   const lastPlayerPos = useRef(new THREE.Vector3(0, 5, 0));
   const deltaMovement = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame(() => {
+  const cameraOffset = useMemo(() => new THREE.Vector3(15, 15, 15), []);
+
+  useFrame((state) => {
     if (playerRef.current && orbitControlsRef.current) {
-      // 1. Get current world position accurately
+      // 1. Get current world position
       playerRef.current.updateWorldMatrix(true, false);
       playerRef.current.getWorldPosition(tempVec);
       
-      // 2. Calculate movement delta
-      deltaMovement.subVectors(tempVec, lastPlayerPos.current);
+      // 2. Failsafe: If the camera is stuck at or very near [0,0,0], force it to the ball
+      // This solves the 'fixed at origin' problem once and for all.
+      if (state.camera.position.lengthSq() < 1) {
+        state.camera.position.set(tempVec.x + 20, tempVec.y + 20, tempVec.z + 20);
+        orbitControlsRef.current.target.copy(tempVec);
+        lastPlayerPos.current.copy(tempVec);
+      }
+
+      // 3. Move camera position relative to the player
+      const shift = new THREE.Vector3().subVectors(tempVec, lastPlayerPos.current);
+      state.camera.position.add(shift);
       
-      // 3. Move camera vertically with player
-      orbitControlsRef.current.object.position.y += deltaMovement.y;
-      
-      // 4. Update the target to keep the player centered
+      // 4. Set OrbitControls target to the player
       orbitControlsRef.current.target.copy(tempVec);
       
-      // 5. Update state and force control update
+      // 5. Update state for next frame
       lastPlayerPos.current.copy(tempVec);
       orbitControlsRef.current.update();
 
-      // 6. Move directional light with player for consistent shadows
+      // 6. Light tracking
       if (directionalLightRef.current) {
         directionalLightRef.current.position.set(tempVec.x + 10, tempVec.y + 50, tempVec.z + 20);
         directionalLightRef.current.target.position.copy(tempVec);
@@ -52,8 +60,8 @@ export default function Experience() {
         makeDefault 
         enablePan={false} 
         maxPolarAngle={Math.PI / 1.5} 
-        minDistance={0.1} 
-        maxDistance={1000} 
+        minDistance={5}  // Increased min distance to prevent being too close
+        maxDistance={50} // Increased max distance for wider view
       />
       
       <color attach="background" args={['#0a0a1a']} />
