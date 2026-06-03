@@ -1,25 +1,21 @@
-import { Stars, Environment, OrbitControls, ContactShadows } from '@react-three/drei';
+import { Stars, Environment, OrbitControls } from '@react-three/drei';
 import { Physics, RigidBody } from '@react-three/rapier';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import Player from './Player';
 import Platforms from './Platforms';
-import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 
 export default function Experience() {
-  const orbitControlsRef = useRef<any>(null);
-  const phase = useGameStore((state) => state.phase);
+  const orbitControlsRef = useRef<OrbitControlsImpl>(null);
+  const playerRef = useRef<THREE.Group>(null);
+  const tempVec = useMemo(() => new THREE.Vector3(), []);
 
-  useFrame((state) => {
-    // Find player in scene to follow
-    const player = state.scene.getObjectByName('player');
-    if (player && orbitControlsRef.current) {
-      const playerPos = new THREE.Vector3();
-      player.getWorldPosition(playerPos);
-      
-      // Smoothly update orbit controls target
-      orbitControlsRef.current.target.lerp(playerPos, 0.1);
+  useFrame(() => {
+    if (playerRef.current && orbitControlsRef.current) {
+      playerRef.current.getWorldPosition(tempVec);
+      orbitControlsRef.current.target.lerp(tempVec, 0.1);
     }
   });
 
@@ -39,7 +35,7 @@ export default function Experience() {
       <Environment preset="city" />
 
       <Physics debug={false}>
-        <Player />
+        <Player ref={playerRef} />
         <Platforms />
         
         {/* Initial floor/starting zone */}

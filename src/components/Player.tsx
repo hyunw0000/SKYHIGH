@@ -1,21 +1,21 @@
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useEffect, forwardRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { RigidBody, RapierRigidBody, BallCollider } from '@react-three/rapier';
+import { RigidBody, RapierRigidBody, BallCollider, CollisionPayload } from '@react-three/rapier';
 import { useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '../stores/useGameStore';
 
-export default function Player() {
+const Player = forwardRef<THREE.Group>((_, ref) => {
   const body = useRef<RapierRigidBody>(null);
-  const [subscribeKeys, getKeys] = useKeyboardControls();
+  const [, getKeys] = useKeyboardControls();
   const { phase, setGameOver, incrementScore } = useGameStore();
   
-  // Camera state
-  const [cameraOffset] = useState(() => new THREE.Vector3(10, 10, 10));
-  const [smoothedCameraPosition] = useState(() => new THREE.Vector3(10, 10, 10));
-  const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
-
   const isGrounded = useRef(false);
+
+  // Reusable vectors to avoid GC
+  const cameraForward = useRef(new THREE.Vector3()).current;
+  const cameraRight = useRef(new THREE.Vector3()).current;
+  const moveVector = useRef(new THREE.Vector3()).current;
 
   /**
    * Reset Position on Restart
@@ -23,8 +23,8 @@ export default function Player() {
   useEffect(() => {
     const unsubscribe = useGameStore.subscribe(
       (state) => state.phase,
-      (phase) => {
-        if (phase === 'READY') {
+      (newPhase) => {
+        if (newPhase === 'READY') {
           body.current?.setTranslation({ x: 0, y: 5, z: 0 }, true);
           body.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
           body.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
@@ -45,16 +45,13 @@ export default function Player() {
        */
       const { forward: keyF, backward: keyB, left: keyL, right: keyR, jump } = getKeys();
       
-      const cameraForward = new THREE.Vector3();
-      const cameraRight = new THREE.Vector3();
-      
       state.camera.getWorldDirection(cameraForward);
       cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0)).normalize();
       
       cameraForward.y = 0;
       cameraForward.normalize();
 
-      const moveVector = new THREE.Vector3(0, 0, 0);
+      moveVector.set(0, 0, 0);
       
       if (keyF) moveVector.add(cameraForward);
       if (keyB) moveVector.sub(cameraForward);
@@ -87,38 +84,22 @@ export default function Player() {
         setGameOver();
       }
     }
-
-    /**
-     * Camera Follow
-     */
-    const targetPosition = new THREE.Vector3(bodyPosition.x, bodyPosition.y, bodyPosition.z);
-    
-    // Smoothly follow the player height
-    smoothedCameraTarget.lerp(new THREE.Vector3(targetPosition.x, targetPosition.y, targetPosition.z), 5 * delta);
-    
-    // Update camera position to maintain distance but follow height
-    const desiredCameraPosition = new THREE.Vector3().copy(state.camera.position);
-    desiredCameraPosition.y = targetPosition.y + 10; // Maintain vertical offset
-    
-    // We don't want to force camera position if using OrbitControls, 
-    // but we need to follow the player. 
-    // Let's just update the target of OrbitControls in Experience.tsx instead.
   });
 
-  const onCollisionEnter = ({ other }: any) => {
+  const onCollisionEnter = ({ other }: CollisionPayload) => {
     if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
       isGrounded.current = true;
     }
   };
 
-  const onCollisionExit = ({ other }: any) => {
+  const onCollisionExit = ({ other }: CollisionPayload) => {
     if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
       isGrounded.current = false;
     }
   };
 
   return (
-    <group>
+    <group ref={ref}>
       <RigidBody
         ref={body}
         colliders={false}
@@ -160,4 +141,6 @@ export default function Player() {
       <pointLight position={[0, 0, 0]} intensity={2} color="#ff0000" distance={5} />
     </group>
   );
-}
+});
+
+export default Player;

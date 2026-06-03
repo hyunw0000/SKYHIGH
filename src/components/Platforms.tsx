@@ -28,11 +28,7 @@ export default function Platforms() {
       const levelIndex = startLevel + i;
       const seed = levelIndex * 15485863;
       
-      let x = 0;
-      let z = 0;
-      let scaleX = 4;
-      let scaleZ = 4;
-      let colorStr = '#ffffff';
+      let x, z, scaleX, scaleZ, colorStr;
 
       if (levelIndex <= 10) {
         // Easy staircase
@@ -58,6 +54,7 @@ export default function Platforms() {
 
       items.push({
         key: `platform-${levelIndex}`,
+        name: 'platform', // Crucial for jump detection
         position: [x, levelIndex * SPACING, z],
         rotation: [0, (seed % 100) / 100 * Math.PI, 0],
         scale: [scaleX, 0.6, scaleZ],

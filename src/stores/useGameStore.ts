@@ -28,7 +28,9 @@ export const useGameStore = create<GameState>()(
     setGameOver: () => set((state) => {
       if (state.phase === 'PLAYING') {
         const newHighScore = Math.max(state.score, state.highScore);
-        localStorage.setItem('sky-high-high-score', newHighScore.toString());
+        if (newHighScore > state.highScore) {
+          localStorage.setItem('sky-high-high-score', newHighScore.toString());
+        }
         return { phase: 'GAME_OVER', highScore: newHighScore };
       }
       return state;
