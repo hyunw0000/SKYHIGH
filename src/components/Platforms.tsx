@@ -80,7 +80,7 @@ export default function Platforms() {
 
   return (
     <InstancedRigidBodies
-      key={Math.floor(score / (SPACING * 5))} // Re-create rigid bodies periodically for stability
+      key={Math.floor(score / (SPACING * 10))} // Stable recycling every 10 platforms
       instances={instances}
       type="fixed"
       colliders="cuboid"

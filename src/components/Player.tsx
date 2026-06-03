@@ -86,9 +86,12 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     }
   });
 
-  const onCollisionEnter = ({ other }: CollisionPayload) => {
+  const onCollisionEnter = ({ other, contact }: CollisionPayload) => {
     if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
-      isGrounded.current = true;
+      // Check if the collision is roughly from below (normal pointing up)
+      if (contact.normal.y > 0.5) {
+        isGrounded.current = true;
+      }
     }
   };
 
@@ -99,20 +102,20 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
   };
 
   return (
-    <group ref={ref}>
-      <RigidBody
-        ref={body}
-        colliders={false}
-        canSleep={false}
-        position={[0, 5, 0]}
-        friction={1}
-        linearDamping={0.5}
-        angularDamping={0.5}
-        gravityScale={2.5}
-        onCollisionEnter={onCollisionEnter}
-        onCollisionExit={onCollisionExit}
-        name="player"
-      >
+    <RigidBody
+      ref={body}
+      colliders={false}
+      canSleep={false}
+      position={[0, 5, 0]}
+      friction={1}
+      linearDamping={0.5}
+      angularDamping={0.5}
+      gravityScale={2.5}
+      onCollisionEnter={onCollisionEnter}
+      onCollisionExit={onCollisionExit}
+      name="player"
+    >
+      <group ref={ref}>
         <BallCollider args={[0.5]} />
         <mesh castShadow>
           <sphereGeometry args={[0.5, 32, 32]} />
@@ -135,11 +138,11 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
             blending={THREE.AdditiveBlending}
           />
         </mesh>
-      </RigidBody>
-      
-      {/* Point light attached to player for neon effect */}
-      <pointLight position={[0, 0, 0]} intensity={2} color="#ff0000" distance={5} />
-    </group>
+        
+        {/* Point light attached to player for neon effect */}
+        <pointLight position={[0, 0, 0]} intensity={2} color="#ff0000" distance={5} />
+      </group>
+    </RigidBody>
   );
 });
 
