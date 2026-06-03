@@ -17,11 +17,8 @@ function App() {
     >
       <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
         <Canvas
-          shadows
+          shadows={{ type: THREE.PCFShadowMap }}
           gl={{ antialias: true }}
-          onCreated={({ gl }) => {
-            gl.shadowMap.type = THREE.PCFShadowMap;
-          }}
           camera={{
             fov: 45,
             near: 0.1,

@@ -38,13 +38,17 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     if (!body.current) return;
 
     const bodyPosition = body.current.translation();
+    const { forward: keyF, backward: keyB, left: keyL, right: keyR, jump } = getKeys();
+
+    // Auto-start game if any key is pressed
+    if (phase === 'READY' && (keyF || keyB || keyL || keyR || jump)) {
+      useGameStore.getState().start();
+    }
 
     if (phase === 'PLAYING') {
       /**
        * Controls / Movement (Camera-Relative)
        */
-      const { forward: keyF, backward: keyB, left: keyL, right: keyR, jump } = getKeys();
-      
       state.camera.getWorldDirection(cameraForward);
       cameraRight.crossVectors(cameraForward, new THREE.Vector3(0, 1, 0)).normalize();
       
@@ -60,7 +64,7 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
 
       if (moveVector.length() > 0) {
         moveVector.normalize();
-        const impulseStrength = 0.6 * delta * 60;
+        const impulseStrength = 0.8 * delta * 60; // Slightly increased impulse
         
         body.current.applyImpulse({ 
           x: moveVector.x * impulseStrength, 
@@ -69,9 +73,9 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
         }, true);
       }
 
-      // Jump
+      // Jump: Added a small 'grace' check for grounding
       if (jump && isGrounded.current) {
-        body.current.applyImpulse({ x: 0, y: 12, z: 0 }, true);
+        body.current.applyImpulse({ x: 0, y: 15, z: 0 }, true); // Increased jump power
         isGrounded.current = false;
       }
 
@@ -87,11 +91,10 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
   });
 
   const onCollisionEnter = ({ other, contact }: any) => {
-    if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
-      // Check if the collision is roughly from below (normal pointing up)
-      if (contact && contact.normal && contact.normal.y > 0.5) {
-        isGrounded.current = true;
-      }
+    // Check if we hit a platform or floor
+    const isFloorOrPlatform = other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor';
+    if (isFloorOrPlatform) {
+      isGrounded.current = true;
     }
   };
 
