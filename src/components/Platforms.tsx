@@ -2,6 +2,7 @@ import { useMemo, useRef, useEffect } from 'react';
 import { InstancedRigidBodies } from '@react-three/rapier';
 import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
+import Flag from './Flag';
 
 const PLATFORM_COUNT = 70; // Increased count to cover wider range
 const SPACING = 4;
@@ -86,13 +87,25 @@ export default function Platforms() {
     return items;
   }, [pivotLevel]);
 
+  const checkpointPosition = useGameStore((state) => state.checkpointPosition);
+
   useEffect(() => {
     if (meshRef.current) {
       meshRef.current.frustumCulled = false;
       
       instances.forEach((instance, i) => {
-        if (instance.color) {
-          meshRef.current?.setColorAt(i, instance.color);
+        let color = instance.color;
+        
+        // Dynamic color for active checkpoint
+        if (instance.name === 'checkpoint' && checkpointPosition) {
+          const isAtCheckpoint = Math.abs(instance.position[1] - checkpointPosition[1]) < 0.1;
+          if (isAtCheckpoint) {
+            color = new THREE.Color('#00ff00'); // Neon Green for active
+          }
+        }
+        
+        if (color) {
+          meshRef.current?.setColorAt(i, color);
         }
       });
       
@@ -104,27 +117,44 @@ export default function Platforms() {
       meshRef.current.computeBoundingBox();
       meshRef.current.computeBoundingSphere();
     }
-  }, [instances]);
+  }, [instances, checkpointPosition]);
 
   return (
-    <InstancedRigidBodies
-      instances={instances}
-      type="fixed"
-      colliders="cuboid"
-    >
-      <instancedMesh 
-        ref={meshRef} 
-        args={[undefined, undefined, PLATFORM_COUNT]} 
-        castShadow 
-        receiveShadow
+    <>
+      <InstancedRigidBodies
+        instances={instances}
+        type="fixed"
+        colliders="cuboid"
       >
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial 
-          toneMapped={false}
-          emissive="#ffffff"
-          emissiveIntensity={0.5} // Increased visibility
-        />
-      </instancedMesh>
-    </InstancedRigidBodies>
+        <instancedMesh 
+          ref={meshRef} 
+          args={[undefined, undefined, PLATFORM_COUNT]} 
+          castShadow 
+          receiveShadow
+        >
+          <boxGeometry args={[1, 1, 1]} />
+          <meshStandardMaterial 
+            toneMapped={false}
+            emissive="#ffffff"
+            emissiveIntensity={0.5} // Increased visibility
+          />
+        </instancedMesh>
+      </InstancedRigidBodies>
+
+      {/* Render flags for checkpoints */}
+      {instances.map((instance) => {
+        if (instance.name === 'checkpoint') {
+          const level = parseInt(instance.key.split('-')[1]);
+          return (
+            <Flag 
+              key={`flag-${instance.key}`} 
+              position={instance.position as [number, number, number]} 
+              level={level} 
+            />
+          );
+        }
+        return null;
+      })}
+    </>
   );
 }

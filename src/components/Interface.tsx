@@ -31,9 +31,10 @@ export default function Interface() {
             <div className="controls-hint">
               <div className="control-item"><span>WASD</span> MOVE</div>
               <div className="control-item"><span>SPACE</span> JUMP</div>
+              <div className="control-item"><span>R</span> RESPAWN</div>
               <div className="control-item"><span>MOUSE</span> VIEW</div>
               <div className="control-item"><span>ESC</span> PAUSE</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD</span> CHECKPOINT</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD</span> CHECKPOINT (TURNS <span style={{ color: '#00ff00' }}>GREEN</span>)</div>
             </div>
             {useGameStore.getState().checkpointPosition && (
               <p className="checkpoint-msg">CHECKPOINT ACTIVE: {useGameStore.getState().checkpointPosition[1].toFixed(0)}m</p>
@@ -53,7 +54,7 @@ export default function Interface() {
             </button>
             <div className="controls-hint">
               <div className="control-item"><span>ESC</span> RESUME</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD PLATFORM</span> SAVES PROGRESS</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD PLATFORM</span> SAVES PROGRESS (TURNS <span style={{ color: '#00ff00' }}>GREEN</span>)</div>
             </div>
           </div>
         </div>

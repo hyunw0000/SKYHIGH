@@ -25,6 +25,14 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       if (e.key === 'Escape') {
         useGameStore.getState().togglePause();
       }
+      
+      // Press 'R' to restart/respawn at checkpoint
+      if (e.key.toLowerCase() === 'r') {
+        const state = useGameStore.getState();
+        if (state.phase === 'PLAYING' || state.phase === 'GAME_OVER') {
+          state.restart();
+        }
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
