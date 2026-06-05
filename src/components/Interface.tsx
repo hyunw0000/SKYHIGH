@@ -1,8 +1,8 @@
 import { useGameStore } from '../stores/useGameStore';
-import { Play, RotateCcw, Trophy } from 'lucide-react';
+import { Play, RotateCcw, Trophy, Pause, Heart, Sparkles } from 'lucide-react';
 
 export default function Interface() {
-  const { phase, score, highScore, start, restart } = useGameStore();
+  const { phase, score, highScore, start, restart, togglePause } = useGameStore();
 
   return (
     <div className="interface">
@@ -32,7 +32,51 @@ export default function Interface() {
               <div className="control-item"><span>WASD</span> MOVE</div>
               <div className="control-item"><span>SPACE</span> JUMP</div>
               <div className="control-item"><span>MOUSE</span> VIEW</div>
+              <div className="control-item"><span>ESC</span> PAUSE</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD</span> CHECKPOINT</div>
             </div>
+            {useGameStore.getState().checkpointPosition && (
+              <p className="checkpoint-msg">CHECKPOINT ACTIVE: {useGameStore.getState().checkpointPosition[1].toFixed(0)}m</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Pause Screen */}
+      {phase === 'PAUSED' && (
+        <div className="overlay pause-overlay">
+          <div className="content">
+            <h2 className="title">PAUSED</h2>
+            <div className="neon-line"></div>
+            <button className="btn-neon" onClick={togglePause}>
+              <Play size={24} fill="currentColor" /> RESUME
+            </button>
+            <div className="controls-hint">
+              <div className="control-item"><span>ESC</span> RESUME</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD PLATFORM</span> SAVES PROGRESS</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Win Screen */}
+      {phase === 'WON' && (
+        <div className="overlay win-overlay">
+          <div className="content">
+            <Sparkles className="icon-gold" size={80} />
+            <h1 className="title-win">MISSION ACCOMPLISHED</h1>
+            <div className="neon-line"></div>
+            <p className="subtitle">YOU REACHED THE SUMMIT!</p>
+            <div className="final-score-neon">
+              <Trophy className="icon-gold" size={40} />
+              <div className="score-details">
+                <span className="score-value">{score.toFixed(1)}m</span>
+                <span className="score-label">FINAL ALTITUDE</span>
+              </div>
+            </div>
+            <button className="btn-neon" onClick={() => window.location.reload()}>
+              <RotateCcw size={24} /> NEW JOURNEY
+            </button>
           </div>
         </div>
       )}
@@ -49,8 +93,8 @@ export default function Interface() {
                 <span className="score-label">FINAL ALTITUDE</span>
               </div>
             </div>
-            <button className="btn-neon btn-restart" onClick={() => { restart(); start(); }}>
-              <RotateCcw size={24} /> RE-INITIALIZE
+            <button className="btn-neon btn-restart" onClick={() => { restart(); }}>
+              <RotateCcw size={24} /> {useGameStore.getState().checkpointPosition ? 'RESPAWN AT CHECKPOINT' : 'RE-INITIALIZE'}
             </button>
           </div>
         </div>

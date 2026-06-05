@@ -6,6 +6,7 @@ import Player from './Player';
 import Platforms from './Platforms';
 import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
+import { useGameStore } from '../stores/useGameStore';
 
 export default function Experience() {
   const orbitControlsRef = useRef<OrbitControlsImpl>(null);
@@ -54,6 +55,8 @@ export default function Experience() {
     }
   });
 
+  const phase = useGameStore((state) => state.phase);
+
   return (
     <>
       <OrbitControls 
@@ -69,7 +72,7 @@ export default function Experience() {
       <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
       <Environment preset="city" />
 
-      <Physics debug={false} gravity={[0, -20, 0]}>
+      <Physics debug={false} gravity={[0, -20, 0]} paused={phase === 'PAUSED'}>
         <Player ref={playerRef} />
         <Platforms />
         

@@ -14,6 +14,9 @@ const NEON_COLORS = [
   new THREE.Color('#ffff00'),
 ];
 
+const GOLDEN_COLOR = new THREE.Color('#ffd700');
+const ENDING_LEVEL = 250; // 250 * 4 = 1000m
+
 export default function Platforms() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const currentLevel = useGameStore((state) => state.currentLevel);
@@ -29,9 +32,29 @@ export default function Platforms() {
       const levelIndex = startLevel + i;
       const seed = levelIndex * 15485863;
       
-      let x, z, scaleX, scaleZ, color;
+      let x, z, scaleX, scaleZ, color, name;
 
-      if (levelIndex <= 10) {
+      name = 'platform';
+
+      if (levelIndex === ENDING_LEVEL) {
+        // Massive Ending Platform
+        x = 0;
+        z = 0;
+        scaleX = 40;
+        scaleZ = 40;
+        color = new THREE.Color('#ff0000');
+        name = 'ending';
+      } else if (levelIndex > 0 && levelIndex % 15 === 0) {
+        // Golden Checkpoint Platform (Every 15 levels * 4m = 60m)
+        const angle = levelIndex * 0.5;
+        const radius = 5;
+        x = Math.sin(angle) * radius;
+        z = Math.cos(angle) * radius;
+        scaleX = 8;
+        scaleZ = 8;
+        color = GOLDEN_COLOR;
+        name = 'checkpoint';
+      } else if (levelIndex <= 10) {
         const angle = levelIndex * 0.8;
         const radius = 5;
         x = Math.sin(angle) * radius;
@@ -53,7 +76,7 @@ export default function Platforms() {
 
       items.push({
         key: `platform-${levelIndex}`,
-        name: 'platform',
+        name: name, // This is essential for collision detection
         position: [x, levelIndex * SPACING, z],
         rotation: [0, (seed % 100) / 100 * Math.PI, 0],
         scale: [scaleX, 0.6, scaleZ],

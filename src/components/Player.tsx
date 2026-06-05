@@ -18,6 +18,19 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
   const moveVector = useRef(new THREE.Vector3()).current;
 
   /**
+   * Input & Events
+   */
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        useGameStore.getState().togglePause();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  /**
    * Reset Position on Restart
    */
   useEffect(() => {
@@ -25,7 +38,12 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       (state) => state.phase,
       (newPhase) => {
         if (newPhase === 'READY') {
-          body.current?.setTranslation({ x: 0, y: 5, z: 0 }, true);
+          const checkpoint = useGameStore.getState().checkpointPosition;
+          if (checkpoint) {
+            body.current?.setTranslation({ x: checkpoint[0], y: checkpoint[1] + 2, z: checkpoint[2] }, true);
+          } else {
+            body.current?.setTranslation({ x: 0, y: 5, z: 0 }, true);
+          }
           body.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
           body.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
         }
@@ -97,16 +115,29 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     }
   });
 
-  const onCollisionEnter = ({ other, contact }: any) => {
+  const onCollisionEnter = ({ other }: any) => {
+    const name = other.rigidBodyObject?.name;
+    
     // Check if we hit a platform or floor
-    const isFloorOrPlatform = other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor';
-    if (isFloorOrPlatform) {
+    if (name === 'platform' || name === 'floor' || name === 'checkpoint' || name === 'ending') {
       isGrounded.current = true;
+    }
+
+    // Save Checkpoint
+    if (name === 'checkpoint') {
+      const pos = other.rigidBodyObject.position;
+      useGameStore.getState().setCheckpoint([pos.x, pos.y, pos.z]);
+    }
+
+    // Win Game
+    if (name === 'ending') {
+      useGameStore.getState().setWin();
     }
   };
 
   const onCollisionExit = ({ other }: any) => {
-    if (other.rigidBodyObject?.name === 'platform' || other.rigidBodyObject?.name === 'floor') {
+    const name = other.rigidBodyObject?.name;
+    if (name === 'platform' || name === 'floor' || name === 'checkpoint' || name === 'ending') {
       isGrounded.current = false;
     }
   };
