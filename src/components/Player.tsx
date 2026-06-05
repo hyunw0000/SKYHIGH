@@ -101,21 +101,26 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
 
       // Jump: Added a small 'grace' check for grounding
       if (jump && isGrounded.current) {
-        body.current.applyImpulse({ x: 0, y: 16, z: 0 }, true); // Increased from 12 to 16
+        // Reset vertical velocity for consistent jump height and feel
+        const curVel = body.current.linvel();
+        body.current.setLinvel({ x: curVel.x, y: 0, z: curVel.z }, true);
+        
+        body.current.applyImpulse({ x: 0, y: 16, z: 0 }, true);
         isGrounded.current = false;
       }
 
       /**
-       * Score & Game Over
+       * Score & Game Over - Throttled updates
        */
       const currentHeight = bodyPosition.y;
-      const currentLevel = Math.floor(currentHeight / 4); // 4 is the SPACING
       
-      if (currentHeight > useGameStore.getState().score) {
+      // Only update store if height change is significant (e.g., > 0.5m) or level changes
+      if (currentHeight > useGameStore.getState().score + 0.5) {
         incrementScore(currentHeight);
+        
+        const currentLevel = Math.floor(currentHeight / 4);
+        useGameStore.getState().setCurrentLevel(currentLevel);
       }
-
-      useGameStore.getState().setCurrentLevel(currentLevel);
       
       if (currentHeight < -10) {
         setGameOver();
@@ -143,13 +148,6 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     }
   };
 
-  const onCollisionExit = ({ other }: any) => {
-    const name = other.rigidBodyObject?.name;
-    if (name === 'platform' || name === 'floor' || name === 'checkpoint' || name === 'ending') {
-      isGrounded.current = false;
-    }
-  };
-
   return (
     <RigidBody
       ref={body}
@@ -161,9 +159,8 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       linearDamping={1.0}
       angularDamping={1.0}
       gravityScale={2.5}
-      ccd={true} // Enable Continuous Collision Detection
+      ccd={false} // Disable CCD for performance, usually not needed for this sphere size
       onCollisionEnter={onCollisionEnter}
-      onCollisionExit={onCollisionExit}
       name="player"
     >
       <group ref={ref}>

@@ -16,10 +16,10 @@ export default function Experience() {
   // Pre-allocated objects for GC-free frame updates
   const tempVec = useMemo(() => new THREE.Vector3(), []);
   const lastPlayerPos = useRef(new THREE.Vector3(0, 5, 0));
-  const deltaMovement = useMemo(() => new THREE.Vector3(), []);
 
-  const cameraOffset = useMemo(() => new THREE.Vector3(15, 15, 15), []);
   const shiftVec = useMemo(() => new THREE.Vector3(), []);
+
+  const lastLightUpdatePos = useRef(new THREE.Vector3(0, 0, 0));
 
   useFrame((state) => {
     if (playerRef.current && orbitControlsRef.current) {
@@ -27,8 +27,7 @@ export default function Experience() {
       playerRef.current.updateWorldMatrix(true, false);
       playerRef.current.getWorldPosition(tempVec);
       
-      // 2. Failsafe: If the camera is stuck at or very near [0,0,0], force it to the ball
-      // This solves the 'fixed at origin' problem once and for all.
+      // 2. Failsafe: If the camera is stuck at or very near [0,0,0]
       if (state.camera.position.lengthSq() < 1) {
         state.camera.position.set(tempVec.x + 20, tempVec.y + 20, tempVec.z + 20);
         orbitControlsRef.current.target.copy(tempVec);
@@ -46,11 +45,12 @@ export default function Experience() {
       lastPlayerPos.current.copy(tempVec);
       orbitControlsRef.current.update();
 
-      // 6. Light tracking
-      if (directionalLightRef.current) {
+      // 6. Light tracking - STABILIZED: Only update if player moved more than 5m
+      if (directionalLightRef.current && tempVec.distanceTo(lastLightUpdatePos.current) > 5) {
         directionalLightRef.current.position.set(tempVec.x + 10, tempVec.y + 50, tempVec.z + 20);
         directionalLightRef.current.target.position.copy(tempVec);
         directionalLightRef.current.target.updateMatrixWorld();
+        lastLightUpdatePos.current.copy(tempVec);
       }
     }
   });
@@ -89,12 +89,12 @@ export default function Experience() {
         castShadow
         position={[10, 50, 20]}
         intensity={2.0}
-        shadow-mapSize={[512, 512]}
-        shadow-camera-left={-20}
-        shadow-camera-right={20}
-        shadow-camera-top={20}
-        shadow-camera-bottom={-20}
-        shadow-camera-far={100}
+        shadow-mapSize={[256, 256]} // Reduced from 512 to 256 for performance
+        shadow-camera-left={-15}
+        shadow-camera-right={15}
+        shadow-camera-top={15}
+        shadow-camera-bottom={-15}
+        shadow-camera-far={80}
       />
       <ambientLight intensity={1.2} />
       <pointLight position={[-10, 20, -10]} intensity={1.5} color="#ff00ff" distance={100} />

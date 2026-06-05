@@ -1,8 +1,8 @@
 import { useGameStore } from '../stores/useGameStore';
-import { Play, RotateCcw, Trophy, Pause, Heart, Sparkles } from 'lucide-react';
+import { Play, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 
 export default function Interface() {
-  const { phase, score, highScore, start, restart, togglePause } = useGameStore();
+  const { phase, score, highScore, start, restart, togglePause, checkpointPosition } = useGameStore();
 
   return (
     <div className="interface">
@@ -36,8 +36,8 @@ export default function Interface() {
               <div className="control-item"><span>ESC</span> PAUSE</div>
               <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD</span> CHECKPOINT (TURNS <span style={{ color: '#00ff00' }}>GREEN</span>)</div>
             </div>
-            {useGameStore.getState().checkpointPosition && (
-              <p className="checkpoint-msg">CHECKPOINT ACTIVE: {useGameStore.getState().checkpointPosition[1].toFixed(0)}m</p>
+            {checkpointPosition && (
+              <p className="checkpoint-msg">CHECKPOINT ACTIVE: {checkpointPosition[1].toFixed(0)}m</p>
             )}
           </div>
         </div>

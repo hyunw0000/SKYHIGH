@@ -5,11 +5,9 @@ import { useGameStore } from '../stores/useGameStore';
 
 interface FlagProps {
   position: [number, number, number];
-  level: number;
 }
 
-export default function Flag({ position, level }: FlagProps) {
-  const meshRef = useRef<THREE.Mesh>(null);
+export default function Flag({ position }: FlagProps) {
   const bannerRef = useRef<THREE.Mesh>(null);
   const checkpointPosition = useGameStore((state) => state.checkpointPosition);
   
@@ -32,7 +30,7 @@ export default function Flag({ position, level }: FlagProps) {
     <group position={[position[0] + 3, position[1], position[2] + 3]}>
       {/* Pole */}
       <mesh position={[0, 1.5, 0]} castShadow>
-        <cylinderGeometry args={[0.05, 0.05, 3, 8]} />
+        <cylinderGeometry args={[0.05, 0.05, 3, 6]} /> {/* Reduced segments from 8 to 6 */}
         <meshStandardMaterial color="#888888" metalness={0.8} roughness={0.2} />
       </mesh>
 
@@ -47,9 +45,9 @@ export default function Flag({ position, level }: FlagProps) {
         />
       </mesh>
 
-      {/* Point light for active checkpoint */}
+      {/* Point light for active checkpoint - optimized to only render if truly active */}
       {isActive && (
-        <pointLight position={[0, 3, 0]} intensity={2} color="#00ff00" distance={5} />
+        <pointLight position={[0, 3, 0]} intensity={3} color="#00ff00" distance={8} decay={2} />
       )}
     </group>
   );
