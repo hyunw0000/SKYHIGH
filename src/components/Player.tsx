@@ -82,7 +82,9 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       /**
        * Score & Game Over
        */
-      incrementScore(bodyPosition.y);
+      if (bodyPosition.y > useGameStore.getState().score) {
+        incrementScore(bodyPosition.y);
+      }
       
       if (bodyPosition.y < -10) {
         setGameOver();

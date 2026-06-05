@@ -18,6 +18,7 @@ export default function Experience() {
   const deltaMovement = useMemo(() => new THREE.Vector3(), []);
 
   const cameraOffset = useMemo(() => new THREE.Vector3(15, 15, 15), []);
+  const shiftVec = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state) => {
     if (playerRef.current && orbitControlsRef.current) {
@@ -34,8 +35,8 @@ export default function Experience() {
       }
 
       // 3. Move camera position relative to the player
-      const shift = new THREE.Vector3().subVectors(tempVec, lastPlayerPos.current);
-      state.camera.position.add(shift);
+      shiftVec.subVectors(tempVec, lastPlayerPos.current);
+      state.camera.position.add(shiftVec);
       
       // 4. Set OrbitControls target to the player
       orbitControlsRef.current.target.copy(tempVec);

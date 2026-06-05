@@ -17,10 +17,11 @@ const NEON_COLORS = [
 export default function Platforms() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const score = useGameStore((state) => state.score);
+  
+  const currentLevel = Math.floor(score / SPACING);
 
   const instances = useMemo(() => {
-    // We want a stable set of platforms around the current score
-    const currentLevel = Math.floor(score / SPACING);
+    // We want a stable set of platforms around the current level
     const startLevel = Math.max(1, currentLevel - 10);
     
     const items = [];
@@ -62,7 +63,7 @@ export default function Platforms() {
       });
     }
     return items;
-  }, [score]);
+  }, [currentLevel]);
 
   useEffect(() => {
     if (meshRef.current) {

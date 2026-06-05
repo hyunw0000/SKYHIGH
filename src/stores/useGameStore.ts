@@ -36,8 +36,12 @@ export const useGameStore = create<GameState>()(
       return state;
     }),
 
-    incrementScore: (newScore: number) => set((state) => ({
-      score: Math.max(state.score, Math.floor(newScore))
-    })),
+    incrementScore: (newScore: number) => set((state) => {
+      const flooredScore = Math.floor(newScore);
+      if (flooredScore > state.score) {
+        return { score: flooredScore };
+      }
+      return state;
+    }),
   }))
 );
