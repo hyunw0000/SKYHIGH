@@ -40,9 +40,8 @@ export const useGameStore = create<GameState>()(
     }),
 
     incrementScore: (newScore: number) => set((state) => {
-      const flooredScore = Math.floor(newScore);
-      if (flooredScore > state.score) {
-        return { score: flooredScore };
+      if (newScore > state.score) {
+        return { score: newScore };
       }
       return state;
     }),

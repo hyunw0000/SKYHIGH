@@ -10,11 +10,11 @@ export default function Interface() {
       <div className="score-board">
         <div className="current-score">
           <span className="label">ALTITUDE</span>
-          <span className="value">{score}m</span>
+          <span className="value">{score.toFixed(1)}m</span>
         </div>
         <div className="high-score">
           <span className="label">BEST</span>
-          <span className="value">{highScore}m</span>
+          <span className="value">{highScore.toFixed(1)}m</span>
         </div>
       </div>
 
@@ -45,7 +45,7 @@ export default function Interface() {
             <div className="final-score-neon">
               <Trophy className="icon-gold" size={40} />
               <div className="score-details">
-                <span className="score-value">{score}m</span>
+                <span className="score-value">{score.toFixed(1)}m</span>
                 <span className="score-label">FINAL ALTITUDE</span>
               </div>
             </div>
