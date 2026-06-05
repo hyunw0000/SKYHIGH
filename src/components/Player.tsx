@@ -64,7 +64,7 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
 
       if (moveVector.length() > 0) {
         moveVector.normalize();
-        const impulseStrength = 0.8 * delta * 60; // Slightly increased impulse
+        const impulseStrength = 0.4 * delta * 60; // Reduced from 0.8 to 0.4 for slower movement
         
         body.current.applyImpulse({ 
           x: moveVector.x * impulseStrength, 
@@ -75,18 +75,23 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
 
       // Jump: Added a small 'grace' check for grounding
       if (jump && isGrounded.current) {
-        body.current.applyImpulse({ x: 0, y: 15, z: 0 }, true); // Increased jump power
+        body.current.applyImpulse({ x: 0, y: 16, z: 0 }, true); // Increased from 12 to 16
         isGrounded.current = false;
       }
 
       /**
        * Score & Game Over
        */
-      if (bodyPosition.y > useGameStore.getState().score) {
-        incrementScore(bodyPosition.y);
-      }
+      const currentHeight = bodyPosition.y;
+      const currentLevel = Math.floor(currentHeight / 4); // 4 is the SPACING
       
-      if (bodyPosition.y < -10) {
+      if (currentHeight > useGameStore.getState().score) {
+        incrementScore(currentHeight);
+      }
+
+      useGameStore.getState().setCurrentLevel(currentLevel);
+      
+      if (currentHeight < -10) {
         setGameOver();
       }
     }
@@ -114,8 +119,8 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       position={[0, 5, 0]}
       friction={1}
       restitution={0.2}
-      linearDamping={0.5}
-      angularDamping={0.5}
+      linearDamping={1.0}
+      angularDamping={1.0}
       gravityScale={2.5}
       ccd={true} // Enable Continuous Collision Detection
       onCollisionEnter={onCollisionEnter}

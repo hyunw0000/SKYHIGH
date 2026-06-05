@@ -66,7 +66,7 @@ export default function Experience() {
       />
       
       <color attach="background" args={['#0a0a1a']} />
-      <Stars radius={100} depth={50} count={7000} factor={4} saturation={0} fade speed={1} />
+      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
       <Environment preset="city" />
 
       <Physics debug={false} gravity={[0, -20, 0]}>
@@ -86,7 +86,12 @@ export default function Experience() {
         castShadow
         position={[10, 50, 20]}
         intensity={2.0}
-        shadow-mapSize={[1024, 1024]}
+        shadow-mapSize={[512, 512]}
+        shadow-camera-left={-20}
+        shadow-camera-right={20}
+        shadow-camera-top={20}
+        shadow-camera-bottom={-20}
+        shadow-camera-far={100}
       />
       <ambientLight intensity={1.2} />
       <pointLight position={[-10, 20, -10]} intensity={1.5} color="#ff00ff" distance={100} />

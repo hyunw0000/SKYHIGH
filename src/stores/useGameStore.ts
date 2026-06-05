@@ -7,10 +7,12 @@ interface GameState {
   phase: GamePhase;
   score: number;
   highScore: number;
+  currentLevel: number;
   start: () => void;
   restart: () => void;
   setGameOver: () => void;
   incrementScore: (newScore: number) => void;
+  setCurrentLevel: (level: number) => void;
 }
 
 export const useGameStore = create<GameState>()(
@@ -18,11 +20,12 @@ export const useGameStore = create<GameState>()(
     phase: 'READY',
     score: 0,
     highScore: Number(localStorage.getItem('sky-high-high-score')) || 0,
+    currentLevel: 0,
 
-    start: () => set({ phase: 'PLAYING', score: 0 }),
+    start: () => set({ phase: 'PLAYING', score: 0, currentLevel: 0 }),
     
     restart: () => {
-      set({ phase: 'READY', score: 0 });
+      set({ phase: 'READY', score: 0, currentLevel: 0 });
     },
     
     setGameOver: () => set((state) => {
@@ -40,6 +43,13 @@ export const useGameStore = create<GameState>()(
       const flooredScore = Math.floor(newScore);
       if (flooredScore > state.score) {
         return { score: flooredScore };
+      }
+      return state;
+    }),
+
+    setCurrentLevel: (level: number) => set((state) => {
+      if (state.currentLevel !== level) {
+        return { currentLevel: level };
       }
       return state;
     }),

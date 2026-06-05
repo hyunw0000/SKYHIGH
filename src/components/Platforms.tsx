@@ -3,45 +3,43 @@ import { InstancedRigidBodies } from '@react-three/rapier';
 import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
 
-const PLATFORM_COUNT = 50;
+const PLATFORM_COUNT = 70; // Increased count to cover wider range
 const SPACING = 4;
 
 const NEON_COLORS = [
-  '#ffffff', // White
-  '#00ffff', // Cyan
-  '#ff00ff', // Magenta
-  '#00ff00', // Lime
-  '#ffff00', // Yellow
+  new THREE.Color('#ffffff'),
+  new THREE.Color('#00ffff'),
+  new THREE.Color('#ff00ff'),
+  new THREE.Color('#00ff00'),
+  new THREE.Color('#ffff00'),
 ];
 
 export default function Platforms() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const score = useGameStore((state) => state.score);
-  
-  const currentLevel = Math.floor(score / SPACING);
+  const currentLevel = useGameStore((state) => state.currentLevel);
+
+  // Lazy update: Only re-generate when player moves 10 levels away from the pivot
+  const pivotLevel = Math.floor(currentLevel / 10) * 10;
 
   const instances = useMemo(() => {
-    // We want a stable set of platforms around the current level
-    const startLevel = Math.max(1, currentLevel - 10);
+    const startLevel = Math.max(1, pivotLevel - 20); 
     
     const items = [];
     for (let i = 0; i < PLATFORM_COUNT; i++) {
       const levelIndex = startLevel + i;
       const seed = levelIndex * 15485863;
       
-      let x, z, scaleX, scaleZ, colorStr;
+      let x, z, scaleX, scaleZ, color;
 
       if (levelIndex <= 10) {
-        // Easy staircase
         const angle = levelIndex * 0.8;
         const radius = 5;
         x = Math.sin(angle) * radius;
         z = Math.cos(angle) * radius;
         scaleX = 6;
         scaleZ = 6;
-        colorStr = '#ffffff';
+        color = NEON_COLORS[0];
       } else {
-        // Progressive difficulty
         const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
         const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
         x = Math.sin(angle) * radius;
@@ -49,29 +47,30 @@ export default function Platforms() {
         scaleX = 4 + Math.sin(seed * 2) * 1.5;
         scaleZ = 4 + Math.cos(seed * 2) * 1.5;
         
-        const colorIndex = Math.abs(Math.floor(Math.sin(seed) * NEON_COLORS.length));
-        colorStr = NEON_COLORS[colorIndex];
+        const colorIndex = Math.abs(seed) % NEON_COLORS.length;
+        color = NEON_COLORS[colorIndex];
       }
 
       items.push({
         key: `platform-${levelIndex}`,
-        name: 'platform', // Crucial for jump detection
+        name: 'platform',
         position: [x, levelIndex * SPACING, z],
         rotation: [0, (seed % 100) / 100 * Math.PI, 0],
         scale: [scaleX, 0.6, scaleZ],
-        color: new THREE.Color(colorStr),
+        color: color || NEON_COLORS[0], // Fallback to white if undefined
       });
     }
     return items;
-  }, [currentLevel]);
+  }, [pivotLevel]);
 
   useEffect(() => {
     if (meshRef.current) {
-      // Disable frustum culling to prevent disappearing platforms
       meshRef.current.frustumCulled = false;
       
       instances.forEach((instance, i) => {
-        meshRef.current?.setColorAt(i, instance.color);
+        if (instance.color) {
+          meshRef.current?.setColorAt(i, instance.color);
+        }
       });
       
       if (meshRef.current.instanceColor) {
