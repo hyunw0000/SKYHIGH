@@ -46,23 +46,37 @@ export default function Platforms() {
       const z = Math.cos(angle) * radius;
       const position = [x, levelIndex * SPACING, z] as [number, number, number];
       
-      if (levelIndex > 150 && levelIndex % 3 === 0) {
-        destructible.push({
-            key: `destructible-${levelIndex}`,
-            position
+      // 1. Checkpoint (Priority 1)
+      if (levelIndex > 0 && levelIndex % 15 === 0) {
+        items.push({
+          key: `platform-${levelIndex}`,
+          name: 'checkpoint',
+          position,
+          rotation: [0, (seed % 100) / 100 * Math.PI, 0] as [number, number, number],
+          scale: [8, 0.6, 8] as [number, number, number],
+          color: GOLDEN_COLOR,
         });
-      } else if (levelIndex >= 75 && levelIndex % 3 === 0) {
+      }
+      // 2. Destructible Platform (Priority 2)
+      else if (levelIndex > 150 && levelIndex % 3 === 0) {
+        destructible.push({
+          key: `destructible-${levelIndex}`,
+          position
+        });
+      }
+      // 3. Moving Platform (Priority 3)
+      else if (levelIndex >= 75 && levelIndex % 3 === 0) {
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
         });
-      } else {
+      }
+      // 4. Normal Platform
+      else {
         let scaleX, scaleZ, color, name = 'platform';
 
         if (levelIndex === ENDING_LEVEL) {
           scaleX = 40; scaleZ = 40; color = new THREE.Color('#ff0000'); name = 'ending';
-        } else if (levelIndex > 0 && levelIndex % 15 === 0) {
-          scaleX = 8; scaleZ = 8; color = GOLDEN_COLOR; name = 'checkpoint';
         } else if (levelIndex <= 10) {
           scaleX = 6; scaleZ = 6; color = NEON_COLORS[0];
         } else {
@@ -82,14 +96,11 @@ export default function Platforms() {
         items.push({
           key: `platform-${levelIndex}`,
           name: name,
-          position: [0, levelIndex * SPACING, 0] as [number, number, number], // Using 0,0 for now as x,z logic is above
+          position: position,
           rotation: [0, (seed % 100) / 100 * Math.PI, 0] as [number, number, number],
           scale: [scaleX, 0.6, scaleZ] as [number, number, number],
           color: color || NEON_COLORS[0],
         });
-        
-        // Fix position in items array
-        items[items.length-1].position = position;
       }
     }
     return { instances: items, movingPlatforms: moving, destructiblePlatforms: destructible };
