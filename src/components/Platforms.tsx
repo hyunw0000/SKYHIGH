@@ -4,6 +4,7 @@ import { InstancedRigidBodies, RigidBody, RapierRigidBody } from '@react-three/r
 import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
 import Flag from './Flag';
+import DestructiblePlatform from './DestructiblePlatform';
 
 const PLATFORM_COUNT = 70; 
 const SPACING = 4;
@@ -26,48 +27,52 @@ export default function Platforms() {
   
   const pivotLevel = useGameStore((state) => Math.floor(state.currentLevel / 20) * 20);
 
-  const { instances, movingPlatforms } = useMemo(() => {
+  const { instances, movingPlatforms, destructiblePlatforms } = useMemo(() => {
     const startLevel = Math.max(1, pivotLevel - 40); 
     const count = 100;
     
     const items = [];
     const moving = [];
+    const destructible = [];
     
     for (let i = 0; i < count; i++) {
       const levelIndex = startLevel + i;
       const seed = levelIndex * 15485863;
+      const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
+      const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
+      const x = Math.sin(angle) * radius;
+      const z = Math.cos(angle) * radius;
+      const position = [x, levelIndex * SPACING, z] as [number, number, number];
       
-      if (levelIndex > 75 && levelIndex % 5 === 0) {
+      if (levelIndex > 150 && levelIndex % 3 === 0) {
+        destructible.push({
+            key: `destructible-${levelIndex}`,
+            position
+        });
+      } else if (levelIndex > 75 && levelIndex % 5 === 0) {
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
-          initialX: 0,
-          z: 0,
         });
       } else {
-        let x, z, scaleX, scaleZ, color, name = 'platform';
+        let scaleX, scaleZ, color, name = 'platform';
 
         if (levelIndex === ENDING_LEVEL) {
-          x = 0; z = 0; scaleX = 40; scaleZ = 40; color = new THREE.Color('#ff0000'); name = 'ending';
+          scaleX = 40; scaleZ = 40; color = new THREE.Color('#ff0000'); name = 'ending';
         } else if (levelIndex > 0 && levelIndex % 15 === 0) {
-          const angle = levelIndex * 0.5;
-          const radius = 5;
-          x = Math.sin(angle) * radius;
-          z = Math.cos(angle) * radius;
           scaleX = 8; scaleZ = 8; color = GOLDEN_COLOR; name = 'checkpoint';
         } else if (levelIndex <= 10) {
-          const angle = levelIndex * 0.8;
-          const radius = 5;
-          x = Math.sin(angle) * radius;
-          z = Math.cos(angle) * radius;
           scaleX = 6; scaleZ = 6; color = NEON_COLORS[0];
         } else {
-          const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
-          const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
-          x = Math.sin(angle) * radius;
-          z = Math.cos(angle) * radius;
           scaleX = 4 + Math.sin(seed * 2) * 1.5;
           scaleZ = 4 + Math.cos(seed * 2) * 1.5;
+          
+          // Difficulty increase: reduce size after 900m (level 225)
+          if (levelIndex > 225) {
+            scaleX *= 0.5;
+            scaleZ *= 0.5;
+          }
+          
           const colorIndex = Math.abs(seed) % NEON_COLORS.length;
           color = NEON_COLORS[colorIndex];
         }
@@ -75,14 +80,17 @@ export default function Platforms() {
         items.push({
           key: `platform-${levelIndex}`,
           name: name,
-          position: [x, levelIndex * SPACING, z] as [number, number, number],
+          position: [0, levelIndex * SPACING, 0] as [number, number, number], // Using 0,0 for now as x,z logic is above
           rotation: [0, (seed % 100) / 100 * Math.PI, 0] as [number, number, number],
           scale: [scaleX, 0.6, scaleZ] as [number, number, number],
           color: color || NEON_COLORS[0],
         });
+        
+        // Fix position in items array
+        items[items.length-1].position = position;
       }
     }
-    return { instances: items, movingPlatforms: moving };
+    return { instances: items, movingPlatforms: moving, destructiblePlatforms: destructible };
   }, [pivotLevel]);
 
   useFrame((state) => {
@@ -151,6 +159,10 @@ export default function Platforms() {
             <meshStandardMaterial color={MOVING_COLOR} emissive={MOVING_COLOR} emissiveIntensity={0.5} />
           </mesh>
         </RigidBody>
+      ))}
+
+      {destructiblePlatforms.map((p) => (
+        <DestructiblePlatform key={p.key} position={p.position} />
       ))}
 
       {flags}

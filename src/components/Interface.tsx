@@ -1,11 +1,33 @@
 import { useGameStore } from '../stores/useGameStore';
 import { Play, RotateCcw, Trophy, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function Interface() {
   const { phase, score, highScore, start, restart, togglePause, checkpointPosition } = useGameStore();
+  const [notification, setNotification] = useState<string | null>(null);
+
+  useEffect(() => {
+    const checkMilestone = (m: number, msg: string) => {
+      if (score >= m && score < m + 2) { // Brief window for trigger
+        setNotification(msg);
+        setTimeout(() => setNotification(null), 3000); // Display for 3 seconds
+      }
+    };
+
+    checkMilestone(300, "NEW PLATFORMS DETECTED: MOVING PLATFORMS ACTIVE");
+    checkMilestone(600, "WARNING: DESTRUCTIBLE PLATFORMS AHEAD");
+    checkMilestone(900, "WARNING: PLATFORM SIZE REDUCED");
+  }, [score]);
 
   return (
     <div className="interface">
+      {/* Milestone Notification */}
+      {notification && (
+        <div className="milestone-notification">
+          <p>{notification}</p>
+        </div>
+      )}
+
       {/* Score Dashboard */}
       <div className="score-board">
         <div className="current-score">
@@ -17,7 +39,8 @@ export default function Interface() {
           <span className="value">{highScore.toFixed(1)}m</span>
         </div>
       </div>
-
+      
+      {/* ... rest of existing code ... */}
       {/* Ready Screen */}
       {phase === 'READY' && (
         <div className="overlay">
