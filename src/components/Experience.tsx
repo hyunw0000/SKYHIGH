@@ -111,7 +111,7 @@ export default function Experience() {
       <pointLight ref={pointLight1Ref} position={[-10, 20, -10]} intensity={2.5} color="#ff00ff" distance={150} decay={2} />
       <pointLight ref={pointLight2Ref} position={[10, 20, 10]} intensity={2.5} color="#00f2ff" distance={150} decay={2} />
       
-      <fog attach="fog" args={['#0a0a1a', 60, 500]} />
+      <fog attach="fog" args={['#0a0a1a', 100, 1500]} />
     </>
   );
 }

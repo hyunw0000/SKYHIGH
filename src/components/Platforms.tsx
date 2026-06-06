@@ -50,6 +50,9 @@ export default function Platforms() {
       const z = Math.cos(angle) * radius;
       const position = [x, levelIndex * SPACING, z] as [number, number, number];
       
+      const isExpertZone = levelIndex >= 150; // 600m+
+      const sizeMultiplier = isExpertZone ? 0.7 : 1.0;
+
       // 1. Checkpoint (Priority 1)
       if (levelIndex > 0 && levelIndex % 15 === 0) {
         items.push({
@@ -57,23 +60,25 @@ export default function Platforms() {
           name: 'checkpoint',
           position,
           rotation: [0, (seed % 100) / 100 * Math.PI, 0] as [number, number, number],
-          scale: [8, 0.6, 8] as [number, number, number],
+          scale: [8 * sizeMultiplier, 0.6, 8 * sizeMultiplier] as [number, number, number],
           color: GOLDEN_COLOR,
         });
       }
-      // 2. Destructible Platform (Priority 2)
-      else if (levelIndex >= 100 && levelIndex % 3 === 0) { // Starts at 400m (Level 100)
+      // 2. Destructible Platform (Priority 2) - Starts at 400m (Level 100)
+      else if (levelIndex >= 100 && levelIndex % 3 === 0) {
         destructible.push({
           key: `destructible-${levelIndex}`,
-          position
+          position,
+          scale: [5 * sizeMultiplier, 0.6, 5 * sizeMultiplier] as [number, number, number]
         });
       }
-      // 3. Moving Platform (Priority 3)
-      else if (levelIndex >= 50 && levelIndex % 3 === 0) { // Starts at 200m (Level 50)
+      // 3. Moving Platform (Priority 3) - Starts at 200m (Level 50)
+      else if (levelIndex >= 50 && levelIndex % 3 === 0) {
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
           position: position,
+          scale: [6 * sizeMultiplier, 0.6, 6 * sizeMultiplier] as [number, number, number]
         });
       }
       // 4. Normal Platform
@@ -85,14 +90,8 @@ export default function Platforms() {
         } else if (levelIndex <= 10) {
           scaleX = 6; scaleZ = 6; color = NEON_COLORS[0];
         } else {
-          scaleX = 4 + Math.sin(seed * 2) * 1.5;
-          scaleZ = 4 + Math.cos(seed * 2) * 1.5;
-          
-          // Difficulty increase: drastically reduce size after 600m (level 150)
-          if (levelIndex >= 150) {
-            scaleX *= 0.4;
-            scaleZ *= 0.4;
-          }
+          scaleX = (4 + Math.sin(seed * 2) * 1.5) * sizeMultiplier;
+          scaleZ = (4 + Math.cos(seed * 2) * 1.5) * sizeMultiplier;
           
           const colorIndex = Math.abs(seed) % NEON_COLORS.length;
           color = NEON_COLORS[colorIndex];
@@ -192,7 +191,7 @@ export default function Platforms() {
       <InstancedRigidBodies instances={instances} type="fixed" colliders="cuboid">
         <instancedMesh ref={meshRef} args={[undefined, undefined, 500]} castShadow receiveShadow>
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial toneMapped={false} emissive="#ffffff" emissiveIntensity={0.15} />
+          <meshStandardMaterial toneMapped={false} emissive="#ffffff" emissiveIntensity={0.5} />
         </instancedMesh>
       </InstancedRigidBodies>
 
@@ -208,14 +207,14 @@ export default function Platforms() {
           name="platform"
         >
           <mesh castShadow receiveShadow>
-            <boxGeometry args={[6, 0.6, 6]} />
-            <meshStandardMaterial color={MOVING_COLOR} emissive={MOVING_COLOR} emissiveIntensity={0.5} />
+            <boxGeometry args={p.scale || [6, 0.6, 6]} />
+            <meshStandardMaterial color={MOVING_COLOR} emissive={MOVING_COLOR} emissiveIntensity={1.5} />
           </mesh>
         </RigidBody>
       ))}
 
       {destructiblePlatforms.map((p) => (
-        <DestructiblePlatform key={p.key} position={p.position} />
+        <DestructiblePlatform key={p.key} position={p.position} scale={p.scale} />
       ))}
 
       {flags}

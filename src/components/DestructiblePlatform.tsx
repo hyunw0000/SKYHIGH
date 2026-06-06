@@ -5,11 +5,12 @@ import * as THREE from 'three';
 
 interface DestructiblePlatformProps {
   position: [number, number, number];
+  scale?: [number, number, number];
 }
 
 const DESTRUCTIBLE_COLOR = new THREE.Color('#ff0000'); // Red for danger
 
-export default function DestructiblePlatform({ position }: DestructiblePlatformProps) {
+export default function DestructiblePlatform({ position, scale = [5, 0.6, 5] }: DestructiblePlatformProps) {
   const [visible, setVisible] = useState(true);
   const timerRef = useRef(0);
   const isBroken = useRef(false);
@@ -45,11 +46,11 @@ export default function DestructiblePlatform({ position }: DestructiblePlatformP
       sensor={!visible} // Make it non-collidable when invisible
     >
       <mesh visible={visible} castShadow receiveShadow>
-        <boxGeometry args={[5, 0.6, 5]} />
+        <boxGeometry args={scale} />
         <meshStandardMaterial 
           color={isBroken.current ? "#550000" : DESTRUCTIBLE_COLOR} 
           emissive={isBroken.current ? "#550000" : DESTRUCTIBLE_COLOR}
-          emissiveIntensity={0.5}
+          emissiveIntensity={1.5} // Increased intensity
         />
       </mesh>
     </RigidBody>
