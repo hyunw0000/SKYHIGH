@@ -100,18 +100,18 @@ export default function Experience() {
         castShadow
         position={[10, 50, 20]}
         intensity={2.0}
-        shadow-mapSize={[256, 256]} // Reduced from 512 to 256 for performance
-        shadow-camera-left={-15}
-        shadow-camera-right={15}
-        shadow-camera-top={15}
-        shadow-camera-bottom={-15}
-        shadow-camera-far={80}
+        shadow-mapSize={[512, 512]} // Restored to 512 for better quality
+        shadow-camera-left={-30} // Expanded area
+        shadow-camera-right={30}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+        shadow-camera-far={150} // Increased from 80 to 150
       />
       <ambientLight intensity={1.2} />
       <pointLight ref={pointLight1Ref} position={[-10, 20, -10]} intensity={2.5} color="#ff00ff" distance={150} decay={2} />
       <pointLight ref={pointLight2Ref} position={[10, 20, 10]} intensity={2.5} color="#00f2ff" distance={150} decay={2} />
       
-      <fog attach="fog" args={['#0a0a1a', 60, 250]} />
+      <fog attach="fog" args={['#0a0a1a', 60, 500]} />
     </>
   );
 }

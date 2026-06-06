@@ -21,17 +21,17 @@ const NEON_COLORS = [
 
 const GOLDEN_COLOR = new THREE.Color('#ffd700');
 const MOVING_COLOR = new THREE.Color('#ffaa00');
-const ENDING_LEVEL = 250; 
+const ENDING_LEVEL = 200; 
 
 export default function Platforms() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const movingPlatformsRef = useRef<Map<string, RapierRigidBody>>(new Map());
   
-  // Stabilize pivotLevel - update every 50 levels (200m) instead of 20
-  const pivotLevel = useGameStore((state) => Math.floor(state.currentLevel / 50) * 50);
+  // Update pivotLevel more frequently (every 10 levels) for smoother rendering transitions
+  const pivotLevel = useGameStore((state) => Math.floor(state.currentLevel / 10) * 10);
 
   const { instances, movingPlatforms, destructiblePlatforms } = useMemo(() => {
-    // Larger window: 300 platforms around the pivot
+    // Window of 300 platforms around the pivot
     const startLevel = Math.max(1, pivotLevel - 100); 
     const count = 300;
     
@@ -41,6 +41,8 @@ export default function Platforms() {
     
     for (let i = 0; i < count; i++) {
       const levelIndex = startLevel + i;
+      if (levelIndex > ENDING_LEVEL) continue; // Don't generate anything above the end
+
       const seed = levelIndex * 15485863;
       const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
       const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
@@ -60,14 +62,14 @@ export default function Platforms() {
         });
       }
       // 2. Destructible Platform (Priority 2)
-      else if (levelIndex > 150 && levelIndex % 3 === 0) {
+      else if (levelIndex >= 100 && levelIndex % 3 === 0) { // Starts at 400m (Level 100)
         destructible.push({
           key: `destructible-${levelIndex}`,
           position
         });
       }
       // 3. Moving Platform (Priority 3)
-      else if (levelIndex >= 75 && levelIndex % 3 === 0) {
+      else if (levelIndex >= 50 && levelIndex % 3 === 0) { // Starts at 200m (Level 50)
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
@@ -86,10 +88,10 @@ export default function Platforms() {
           scaleX = 4 + Math.sin(seed * 2) * 1.5;
           scaleZ = 4 + Math.cos(seed * 2) * 1.5;
           
-          // Difficulty increase: reduce size after 900m (level 225)
-          if (levelIndex > 225) {
-            scaleX *= 0.5;
-            scaleZ *= 0.5;
+          // Difficulty increase: drastically reduce size after 600m (level 150)
+          if (levelIndex >= 150) {
+            scaleX *= 0.4;
+            scaleZ *= 0.4;
           }
           
           const colorIndex = Math.abs(seed) % NEON_COLORS.length;
@@ -137,6 +139,7 @@ export default function Platforms() {
 
   useEffect(() => {
     if (meshRef.current) {
+      meshRef.current.count = instances.length;
       instances.forEach((instance, i) => {
         let color = instance.color;
         if (instance.name === 'checkpoint' && checkpointPosition) {
@@ -146,6 +149,7 @@ export default function Platforms() {
         if (color) meshRef.current?.setColorAt(i, color);
       });
       if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+      if (meshRef.current.instanceMatrix) meshRef.current.instanceMatrix.needsUpdate = true;
     }
   }, [instances, checkpointPosition]);
 

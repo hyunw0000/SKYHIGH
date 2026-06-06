@@ -15,7 +15,7 @@ export default function Interface() {
       };
       if (e.key === '1') teleport(300);
       if (e.key === '2') teleport(600);
-      if (e.key === '3') teleport(900);
+      if (e.key === '3') teleport(790); // Teleport near the end instead of 900
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -29,9 +29,10 @@ export default function Interface() {
       }
     };
 
-    checkMilestone(300, "NEW PLATFORMS DETECTED: MOVING PLATFORMS ACTIVE");
-    checkMilestone(600, "WARNING: DESTRUCTIBLE PLATFORMS AHEAD");
-    checkMilestone(900, "WARNING: PLATFORM SIZE REDUCED");
+    checkMilestone(200, "NEW PLATFORMS DETECTED: MOVING PLATFORMS ACTIVE");
+    checkMilestone(400, "WARNING: DESTRUCTIBLE PLATFORMS AHEAD");
+    checkMilestone(600, "EXPERT ZONE: PLATFORM SIZE REDUCED");
+    checkMilestone(750, "FINAL ASCENT: SUMMIT NEARBY");
   }, [score]);
 
   return (

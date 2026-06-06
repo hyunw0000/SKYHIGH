@@ -37,6 +37,7 @@ export default function DestructiblePlatform({ position }: DestructiblePlatformP
 
   return (
     <RigidBody
+      name="platform"
       type="fixed"
       colliders="cuboid"
       position={position}
