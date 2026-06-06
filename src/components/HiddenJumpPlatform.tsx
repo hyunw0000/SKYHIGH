@@ -27,7 +27,7 @@ export default function HiddenJumpPlatform({ position }: HiddenJumpPlatformProps
       <mesh>
         <boxGeometry args={[2, 0.2, 2]} />
         {/* Invisible jump pad */}
-        <meshStandardMaterial color="#00ff00" transparent opacity={1} />
+        <meshStandardMaterial color="#00ff00" transparent opacity={0} />
       </mesh>
     </RigidBody>
   );

@@ -17,12 +17,12 @@ export default function HintSign({ position, text, rotation = [0, 0, 0] }: HintS
       </mesh>
       {/* Board */}
       <mesh position={[0, 2.5, 0]}>
-        <boxGeometry args={[2, 1, 0.1]} />
+        <boxGeometry args={[2, 1.4, 0.1]} />
         <meshStandardMaterial color="#222222" />
       </mesh>
       {/* Text */}
       <Text
-        position={[0, 2.5, 0.06]}
+        position={[0, 2.7, 0.06]}
         fontSize={0.15}
         color="yellow"
         anchorX="center"
@@ -31,6 +31,11 @@ export default function HintSign({ position, text, rotation = [0, 0, 0] }: HintS
       >
         {text}
       </Text>
+      {/* Directional Arrow */}
+      <mesh position={[0, 2.1, 0.06]} rotation={[0, 0, -Math.PI / 2]}>
+        <coneGeometry args={[0.2, 0.4, 4]} />
+        <meshStandardMaterial color="white" />
+      </mesh>
     </group>
   );
 }
