@@ -5,6 +5,7 @@ import { useGameStore } from '../stores/useGameStore';
 import * as THREE from 'three';
 import Flag from './Flag';
 import DestructiblePlatform from './DestructiblePlatform';
+import HiddenJumpPlatform from './HiddenJumpPlatform';
 
 const PLATFORM_COUNT = 70; 
 const SPACING = 4;
@@ -137,6 +138,20 @@ export default function Platforms() {
       ));
   }, [instances]);
 
+  const checkpointJumpPlatforms = useMemo(() => {
+    return instances
+      .filter((inst) => inst.name === 'checkpoint')
+      .map((inst) => {
+        const pos = inst.position as [number, number, number];
+        return (
+          <HiddenJumpPlatform
+            key={`jump-${inst.key}`}
+            position={[pos[0] + 3, pos[1] + 1, pos[2]]}
+          />
+        );
+      });
+  }, [instances]);
+
   return (
     <>
       <InstancedRigidBodies instances={instances} type="fixed" colliders="cuboid">
@@ -166,6 +181,7 @@ export default function Platforms() {
       ))}
 
       {flags}
+      {checkpointJumpPlatforms}
     </>
   );
 }
