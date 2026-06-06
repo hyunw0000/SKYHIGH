@@ -41,7 +41,7 @@ export default function Platforms() {
     
     for (let i = 0; i < count; i++) {
       const levelIndex = startLevel + i;
-      if (levelIndex > ENDING_LEVEL) continue; // Don't generate anything above the end
+      if (levelIndex > ENDING_LEVEL) continue;
 
       const seed = levelIndex * 15485863;
       const angle = levelIndex * 0.5 + Math.sin(seed) * 0.3;
@@ -51,7 +51,7 @@ export default function Platforms() {
       const position = [x, levelIndex * SPACING, z] as [number, number, number];
       
       const isExpertZone = levelIndex >= 150; // 600m+
-      const sizeMultiplier = isExpertZone ? 0.7 : 1.0;
+      const sizeMultiplier = isExpertZone ? 0.8 : 1.0; // Increased to 0.8 for better visibility
 
       // 1. Checkpoint (Priority 1)
       if (levelIndex > 0 && levelIndex % 15 === 0) {
@@ -113,7 +113,6 @@ export default function Platforms() {
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     
-    // Safety check: only update if refs exist and are valid
     movingPlatforms.forEach((platform) => {
       const body = movingPlatformsRef.current.get(platform.key);
       if (body) {
@@ -121,9 +120,7 @@ export default function Platforms() {
           const level = platform.levelIndex;
           const x = Math.sin(time * 0.5 + level) * 10;
           body.setNextKinematicTranslation({ x, y: level * SPACING, z: 0 });
-        } catch (e) {
-          // Ignore errors during body destruction/transition
-        }
+        } catch (e) {}
       }
     });
   });
@@ -148,7 +145,6 @@ export default function Platforms() {
         if (color) meshRef.current?.setColorAt(i, color);
       });
       if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
-      if (meshRef.current.instanceMatrix) meshRef.current.instanceMatrix.needsUpdate = true;
     }
   }, [instances, checkpointPosition]);
 
@@ -168,7 +164,6 @@ export default function Platforms() {
       .filter((inst) => inst.name === 'checkpoint')
       .map((inst) => {
         const pos = inst.position as [number, number, number];
-        // Shift jump platform further away
         const jumpPos: [number, number, number] = [pos[0] + 6, pos[1] + 1, pos[2]];
         
         return (
@@ -188,10 +183,11 @@ export default function Platforms() {
 
   return (
     <>
-      <InstancedRigidBodies instances={instances} type="fixed" colliders="cuboid">
-        <instancedMesh ref={meshRef} args={[undefined, undefined, 500]} castShadow receiveShadow>
+      {/* CRITICAL: key={pivotLevel} forces remount to sync visuals with physics bodies when the window shifts */}
+      <InstancedRigidBodies key={pivotLevel} instances={instances} type="fixed" colliders="cuboid">
+        <instancedMesh ref={meshRef} args={[undefined, undefined, 1000]} castShadow receiveShadow>
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial toneMapped={false} emissive="#ffffff" emissiveIntensity={0.5} />
+          <meshStandardMaterial emissive="#ffffff" emissiveIntensity={0.8} />
         </instancedMesh>
       </InstancedRigidBodies>
 
