@@ -21,7 +21,7 @@ interface GameState {
 
   export const useGameStore = create<GameState>()(
   subscribeWithSelector((set) => ({
-    phase: 'PLAYING', // Changed default to PLAYING to allow immediate move
+    phase: 'READY', 
     score: 0,
     highScore: Number(localStorage.getItem('sky-high-high-score')) || 0,
     currentLevel: 0,

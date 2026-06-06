@@ -48,8 +48,8 @@ export default function Experience() {
       lastPlayerPos.current.copy(tempVec);
       orbitControlsRef.current.update();
 
-      // 6. Light tracking - STABILIZED: Only update if player moved more than 5m
-      if (directionalLightRef.current && tempVec.distanceTo(lastLightUpdatePos.current) > 5) {
+      // 6. Light tracking - STABILIZED: Only update if player moved more than 10m (was 5m)
+      if (directionalLightRef.current && tempVec.distanceTo(lastLightUpdatePos.current) > 10) {
         directionalLightRef.current.position.set(tempVec.x + 10, tempVec.y + 50, tempVec.z + 20);
         directionalLightRef.current.target.position.copy(tempVec);
         directionalLightRef.current.target.updateMatrixWorld();
@@ -80,7 +80,7 @@ export default function Experience() {
       />
       
       <color attach="background" args={['#0a0a1a']} />
-      <Stars radius={100} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
+      <Stars radius={5000} depth={50} count={3000} factor={4} saturation={0} fade speed={1} />
       <Environment preset="city" />
 
       <Physics debug={false} gravity={[0, -20, 0]} paused={phase === 'PAUSED'}>

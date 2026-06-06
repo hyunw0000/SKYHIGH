@@ -166,13 +166,14 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       ref={body}
       colliders={false}
       canSleep={false}
+      type={phase === 'READY' ? 'kinematicPosition' : 'dynamic'}
       position={[0, 5, 0]}
       friction={1}
       restitution={0.2}
       linearDamping={1.0}
       angularDamping={1.0}
       gravityScale={2.5}
-      ccd={false} // Disable CCD for performance, usually not needed for this sphere size
+      ccd={true} 
       onCollisionEnter={onCollisionEnter}
       name="player"
     >

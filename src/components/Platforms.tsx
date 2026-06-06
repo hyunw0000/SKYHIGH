@@ -25,13 +25,15 @@ const ENDING_LEVEL = 250;
 
 export default function Platforms() {
   const meshRef = useRef<THREE.InstancedMesh>(null);
-  const movingPlatformsRef = useRef<(RapierRigidBody | null)[]>([]);
+  const movingPlatformsRef = useRef<Map<string, RapierRigidBody>>(new Map());
   
-  const pivotLevel = useGameStore((state) => Math.floor(state.currentLevel / 20) * 20);
+  // Stabilize pivotLevel - update every 50 levels (200m) instead of 20
+  const pivotLevel = useGameStore((state) => Math.floor(state.currentLevel / 50) * 50);
 
   const { instances, movingPlatforms, destructiblePlatforms } = useMemo(() => {
-    const startLevel = Math.max(1, pivotLevel - 40); 
-    const count = 200;
+    // Larger window: 300 platforms around the pivot
+    const startLevel = Math.max(1, pivotLevel - 100); 
+    const count = 300;
     
     const items = [];
     const moving = [];
@@ -69,6 +71,7 @@ export default function Platforms() {
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
+          position: position,
         });
       }
       // 4. Normal Platform
@@ -108,11 +111,18 @@ export default function Platforms() {
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
-    movingPlatformsRef.current.forEach((body, i) => {
+    
+    // Safety check: only update if refs exist and are valid
+    movingPlatforms.forEach((platform) => {
+      const body = movingPlatformsRef.current.get(platform.key);
       if (body) {
-        const level = movingPlatforms[i].levelIndex;
-        const x = Math.sin(time * 0.5 + level) * 10;
-        body.setNextKinematicTranslation({ x, y: level * SPACING, z: 0 });
+        try {
+          const level = platform.levelIndex;
+          const x = Math.sin(time * 0.5 + level) * 10;
+          body.setNextKinematicTranslation({ x, y: level * SPACING, z: 0 });
+        } catch (e) {
+          // Ignore errors during body destruction/transition
+        }
       }
     });
   });
@@ -182,10 +192,13 @@ export default function Platforms() {
         </instancedMesh>
       </InstancedRigidBodies>
 
-      {movingPlatforms.map((p, i) => (
+      {movingPlatforms.map((p) => (
         <RigidBody
           key={p.key}
-          ref={(el) => (movingPlatformsRef.current[i] = el)}
+          ref={(el) => {
+            if (el) movingPlatformsRef.current.set(p.key, el);
+            else movingPlatformsRef.current.delete(p.key);
+          }}
           type="kinematicPosition"
           colliders="cuboid"
           name="platform"
