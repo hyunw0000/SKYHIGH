@@ -48,7 +48,8 @@ export default function Platforms() {
       const radius = 3 + (Math.abs(Math.sin(seed)) * 7);
       const x = Math.sin(angle) * radius;
       const z = Math.cos(angle) * radius;
-      const position = [x, levelIndex * SPACING, z] as [number, number, number];
+      const yPos = levelIndex === ENDING_LEVEL ? 805 : levelIndex * SPACING;
+      const position = [x, yPos, z] as [number, number, number];
       
       const isExpertZone = levelIndex >= 150; // 600m+
       const sizeMultiplier = isExpertZone ? 0.4 : 1.0; // Drastically reduced for high difficulty
