@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import Flag from './Flag';
 import DestructiblePlatform from './DestructiblePlatform';
 import HiddenJumpPlatform from './HiddenJumpPlatform';
+import HintSign from './HintSign';
 
 const PLATFORM_COUNT = 70; 
 const SPACING = 4;
@@ -138,16 +139,25 @@ export default function Platforms() {
       ));
   }, [instances]);
 
-  const checkpointJumpPlatforms = useMemo(() => {
+  const checkpointInteractables = useMemo(() => {
     return instances
       .filter((inst) => inst.name === 'checkpoint')
       .map((inst) => {
         const pos = inst.position as [number, number, number];
+        // Shift jump platform further away
+        const jumpPos: [number, number, number] = [pos[0] + 6, pos[1] + 1, pos[2]];
+        
         return (
-          <HiddenJumpPlatform
-            key={`jump-${inst.key}`}
-            position={[pos[0] + 3, pos[1] + 1, pos[2]]}
-          />
+          <group key={`interactable-${inst.key}`}>
+            <HiddenJumpPlatform
+              position={jumpPos}
+            />
+            <HintSign
+              position={[pos[0], pos[1] + 1, pos[2]]}
+              text="더 빨리 올라갈 수 있는 방법이 없을까?"
+              rotation={[0, Math.atan2(jumpPos[0] - pos[0], jumpPos[2] - pos[2]), 0]}
+            />
+          </group>
         );
       });
   }, [instances]);
@@ -181,7 +191,7 @@ export default function Platforms() {
       ))}
 
       {flags}
-      {checkpointJumpPlatforms}
+      {checkpointInteractables}
     </>
   );
 }
