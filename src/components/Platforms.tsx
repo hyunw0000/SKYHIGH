@@ -31,7 +31,7 @@ export default function Platforms() {
 
   const { instances, movingPlatforms, destructiblePlatforms } = useMemo(() => {
     const startLevel = Math.max(1, pivotLevel - 40); 
-    const count = 100;
+    const count = 200;
     
     const items = [];
     const moving = [];
@@ -165,7 +165,7 @@ export default function Platforms() {
   return (
     <>
       <InstancedRigidBodies instances={instances} type="fixed" colliders="cuboid">
-        <instancedMesh ref={meshRef} args={[undefined, undefined, 100]} castShadow receiveShadow>
+        <instancedMesh ref={meshRef} args={[undefined, undefined, 500]} castShadow receiveShadow>
           <boxGeometry args={[1, 1, 1]} />
           <meshStandardMaterial toneMapped={false} emissive="#ffffff" emissiveIntensity={0.15} />
         </instancedMesh>

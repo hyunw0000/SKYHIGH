@@ -16,18 +16,21 @@ interface GameState {
   incrementScore: (newScore: number) => void;
   setCurrentLevel: (level: number) => void;
   togglePause: () => void;
-  setCheckpoint: (pos: [number, number, number]) => void;
-}
+  teleportPlayer: (pos: [number, number, number]) => void;
+  }
 
-export const useGameStore = create<GameState>()(
+  export const useGameStore = create<GameState>()(
   subscribeWithSelector((set) => ({
-    phase: 'READY',
+    phase: 'PLAYING', // Changed default to PLAYING to allow immediate move
     score: 0,
     highScore: Number(localStorage.getItem('sky-high-high-score')) || 0,
     currentLevel: 0,
     checkpointPosition: null,
 
+    teleportPlayer: (pos) => set({ score: pos[1], currentLevel: Math.floor(pos[1] / 4) }),
+
     start: () => set({ phase: 'PLAYING', score: 0, currentLevel: 0 }),
+
     
     restart: () => {
       set((state) => ({ 
