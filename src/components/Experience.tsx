@@ -21,6 +21,9 @@ export default function Experience() {
 
   const lastLightUpdatePos = useRef(new THREE.Vector3(0, 0, 0));
 
+  const pointLight1Ref = useRef<THREE.PointLight>(null);
+  const pointLight2Ref = useRef<THREE.PointLight>(null);
+
   useFrame((state) => {
     if (playerRef.current && orbitControlsRef.current) {
       // 1. Get current world position
@@ -51,6 +54,14 @@ export default function Experience() {
         directionalLightRef.current.target.position.copy(tempVec);
         directionalLightRef.current.target.updateMatrixWorld();
         lastLightUpdatePos.current.copy(tempVec);
+      }
+
+      // 7. Point lights tracking - Maintain neon vibe at all heights
+      if (pointLight1Ref.current) {
+        pointLight1Ref.current.position.set(tempVec.x - 15, tempVec.y + 10, tempVec.z - 15);
+      }
+      if (pointLight2Ref.current) {
+        pointLight2Ref.current.position.set(tempVec.x + 15, tempVec.y + 10, tempVec.z + 15);
       }
     }
   });
@@ -97,10 +108,10 @@ export default function Experience() {
         shadow-camera-far={80}
       />
       <ambientLight intensity={1.2} />
-      <pointLight position={[-10, 20, -10]} intensity={1.5} color="#ff00ff" distance={100} />
-      <pointLight position={[10, 20, 10]} intensity={1.5} color="#00f2ff" distance={100} />
+      <pointLight ref={pointLight1Ref} position={[-10, 20, -10]} intensity={2.5} color="#ff00ff" distance={150} decay={2} />
+      <pointLight ref={pointLight2Ref} position={[10, 20, 10]} intensity={2.5} color="#00f2ff" distance={150} decay={2} />
       
-      <fog attach="fog" args={['#0a0a1a', 60, 200]} />
+      <fog attach="fog" args={['#0a0a1a', 60, 250]} />
     </>
   );
 }

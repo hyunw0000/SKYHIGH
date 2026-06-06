@@ -144,7 +144,7 @@ export default function Platforms() {
           <meshStandardMaterial 
             toneMapped={false}
             emissive="#ffffff"
-            emissiveIntensity={0.5}
+            emissiveIntensity={0.15}
           />
         </instancedMesh>
       </InstancedRigidBodies>
