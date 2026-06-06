@@ -145,6 +145,7 @@ export default function Platforms() {
         if (color) meshRef.current?.setColorAt(i, color);
       });
       if (meshRef.current.instanceColor) meshRef.current.instanceColor.needsUpdate = true;
+      if (meshRef.current.instanceMatrix) meshRef.current.instanceMatrix.needsUpdate = true;
     }
   }, [instances, checkpointPosition]);
 
@@ -187,7 +188,7 @@ export default function Platforms() {
       <InstancedRigidBodies key={pivotLevel} instances={instances} type="fixed" colliders="cuboid">
         <instancedMesh ref={meshRef} args={[undefined, undefined, 1000]} castShadow receiveShadow>
           <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial emissive="#ffffff" emissiveIntensity={0.8} />
+          <meshStandardMaterial toneMapped={false} emissive="#ffffff" emissiveIntensity={0.8} />
         </instancedMesh>
       </InstancedRigidBodies>
 

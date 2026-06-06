@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { RigidBody } from '@react-three/rapier';
+import { RigidBody, CuboidCollider } from '@react-three/rapier';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -40,17 +40,21 @@ export default function DestructiblePlatform({ position, scale = [5, 0.6, 5] }: 
     <RigidBody
       name="platform"
       type="fixed"
-      colliders="cuboid"
+      colliders={false} // Disable automatic colliders to use manual CuboidCollider
       position={position}
       onCollisionEnter={onCollisionEnter}
-      sensor={!visible} // Make it non-collidable when invisible
     >
+      {/* Physically remove the collider when invisible so the player falls */}
+      {visible && (
+        <CuboidCollider args={[scale[0] / 2, scale[1] / 2, scale[2] / 2]} />
+      )}
+      
       <mesh visible={visible} castShadow receiveShadow>
         <boxGeometry args={scale} />
         <meshStandardMaterial 
           color={isBroken.current ? "#550000" : DESTRUCTIBLE_COLOR} 
           emissive={isBroken.current ? "#550000" : DESTRUCTIBLE_COLOR}
-          emissiveIntensity={1.5} // Increased intensity
+          emissiveIntensity={1.5}
         />
       </mesh>
     </RigidBody>

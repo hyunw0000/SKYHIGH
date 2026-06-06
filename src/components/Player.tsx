@@ -137,11 +137,13 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     }
   });
 
+  const collisionsCount = useRef(0);
+
   const onCollisionEnter = ({ other }: any) => {
     const name = other.rigidBodyObject?.name;
     
-    // Check if we hit a platform or floor
     if (name === 'platform' || name === 'floor' || name === 'checkpoint' || name === 'ending') {
+      collisionsCount.current++;
       isGrounded.current = true;
     }
 
@@ -154,6 +156,16 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
     // Win Game
     if (name === 'ending') {
       useGameStore.getState().setWin();
+    }
+  };
+
+  const onCollisionExit = ({ other }: any) => {
+    const name = other.rigidBodyObject?.name;
+    if (name === 'platform' || name === 'floor' || name === 'checkpoint' || name === 'ending') {
+      collisionsCount.current = Math.max(0, collisionsCount.current - 1);
+      if (collisionsCount.current === 0) {
+        isGrounded.current = false;
+      }
     }
   };
 
@@ -171,6 +183,7 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       gravityScale={2.5}
       ccd={true} 
       onCollisionEnter={onCollisionEnter}
+      onCollisionExit={onCollisionExit}
       name="player"
     >
       <group ref={ref}>
