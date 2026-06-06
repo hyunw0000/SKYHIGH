@@ -8,7 +8,7 @@ import { useGameStore } from '../stores/useGameStore';
 const Player = forwardRef<THREE.Group>((_, ref) => {
   const body = useRef<RapierRigidBody>(null);
   const [, getKeys] = useKeyboardControls();
-  const { phase, setGameOver, incrementScore } = useGameStore();
+  const { phase, setGameOver, setScore } = useGameStore();
   
   const isGrounded = useRef(false);
 
@@ -123,17 +123,13 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
       }
 
       /**
-       * Score & Game Over - Throttled updates
+       * Score & Game Over
        */
       const currentHeight = bodyPosition.y;
+      setScore(currentHeight);
       
-      // Only update store if height change is significant (e.g., > 0.5m) or level changes
-      if (currentHeight > useGameStore.getState().score + 0.5) {
-        incrementScore(currentHeight);
-        
-        const currentLevel = Math.floor(currentHeight / 4);
-        useGameStore.getState().setCurrentLevel(currentLevel);
-      }
+      const currentLevel = Math.floor(currentHeight / 4);
+      useGameStore.getState().setCurrentLevel(currentLevel);
       
       if (currentHeight < -10) {
         setGameOver();

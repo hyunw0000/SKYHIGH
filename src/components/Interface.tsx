@@ -3,7 +3,7 @@ import { Play, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Interface() {
-  const { phase, score, highScore, start, restart, togglePause, checkpointPosition, incrementScore, setCurrentLevel, teleportPlayer } = useGameStore();
+  const { phase, score, highScore, start, restart, togglePause, checkpointPosition, setScore, setCurrentLevel, teleportPlayer } = useGameStore();
   const [notification, setNotification] = useState<string | null>(null);
 
   // DEBUG: Temporary teleportation keys

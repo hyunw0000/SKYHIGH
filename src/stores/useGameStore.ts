@@ -13,7 +13,7 @@ interface GameState {
   restart: () => void;
   setGameOver: () => void;
   setWin: () => void;
-  incrementScore: (newScore: number) => void;
+  setScore: (newScore: number) => void;
   setCurrentLevel: (level: number) => void;
   togglePause: () => void;
   teleportPlayer: (pos: [number, number, number]) => void;
@@ -52,20 +52,21 @@ interface GameState {
     
     setGameOver: () => set((state) => {
       if (state.phase === 'PLAYING') {
-        const newHighScore = Math.max(state.score, state.highScore);
-        if (newHighScore > state.highScore) {
-          localStorage.setItem('sky-high-high-score', newHighScore.toString());
-        }
-        return { phase: 'GAME_OVER', highScore: newHighScore };
+        return { phase: 'GAME_OVER' };
       }
       return state;
     }),
 
-    incrementScore: (newScore: number) => set((state) => {
-      if (newScore > state.score) {
-        return { score: newScore };
+    setScore: (newScore: number) => set((state) => {
+      const updates: any = { score: newScore };
+      
+      // Update highScore if current score is higher
+      if (newScore > state.highScore) {
+        updates.highScore = newScore;
+        localStorage.setItem('sky-high-high-score', newScore.toString());
       }
-      return state;
+      
+      return updates;
     }),
 
     setCurrentLevel: (level: number) => set((state) => {
