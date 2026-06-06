@@ -26,9 +26,9 @@ export default function DestructiblePlatform({ position, scale = [5, 0.6, 5] }: 
     if (isBroken.current) {
       timerRef.current += delta;
 
-      if (visible && timerRef.current >= 3) {
+      if (visible && timerRef.current >= 2.5) {
         setVisible(false);
-      } else if (!visible && timerRef.current >= 5) { // 3s disappear + 2s = 5s total
+      } else if (!visible && timerRef.current >= 4.5) { // 2.5s disappear + 2s = 4.5s total
         setVisible(true);
         isBroken.current = false;
         timerRef.current = 0;
