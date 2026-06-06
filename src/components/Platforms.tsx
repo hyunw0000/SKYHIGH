@@ -51,7 +51,7 @@ export default function Platforms() {
       const position = [x, levelIndex * SPACING, z] as [number, number, number];
       
       const isExpertZone = levelIndex >= 150; // 600m+
-      const sizeMultiplier = isExpertZone ? 0.8 : 1.0; // Increased to 0.8 for better visibility
+      const sizeMultiplier = isExpertZone ? 0.4 : 1.0; // Drastically reduced for high difficulty
 
       // 1. Checkpoint (Priority 1)
       if (levelIndex > 0 && levelIndex % 15 === 0) {
@@ -86,7 +86,7 @@ export default function Platforms() {
         let scaleX, scaleZ, color, name = 'platform';
 
         if (levelIndex === ENDING_LEVEL) {
-          scaleX = 40; scaleZ = 40; color = new THREE.Color('#ff0000'); name = 'ending';
+          scaleX = 4; scaleZ = 4; color = new THREE.Color('#00ffff'); name = 'ending';
         } else if (levelIndex <= 10) {
           scaleX = 6; scaleZ = 6; color = NEON_COLORS[0];
         } else {
@@ -215,6 +215,48 @@ export default function Platforms() {
 
       {flags}
       {checkpointInteractables}
+
+      {/* Summit Decoration */}
+      {instances.find(inst => inst.name === 'ending') && (
+        <SummitDecoration position={instances.find(inst => inst.name === 'ending')!.position} />
+      )}
     </>
+  );
+}
+
+function SummitDecoration({ position }: { position: [number, number, number] }) {
+  const ring1Ref = useRef<THREE.Mesh>(null);
+  const ring2Ref = useRef<THREE.Mesh>(null);
+  const ring3Ref = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    if (ring1Ref.current) ring1Ref.current.rotation.y = time * 0.5;
+    if (ring2Ref.current) {
+      ring2Ref.current.rotation.x = time * 0.8;
+      ring2Ref.current.rotation.z = time * 0.3;
+    }
+    if (ring3Ref.current) {
+      ring3Ref.current.rotation.y = -time * 0.4;
+      ring3Ref.current.rotation.x = time * 0.2;
+    }
+  });
+
+  return (
+    <group position={[position[0], position[1] + 2, position[2]]}>
+      <mesh ref={ring1Ref}>
+        <torusGeometry args={[6, 0.1, 16, 100]} />
+        <meshStandardMaterial color="#00ffff" emissive="#00ffff" emissiveIntensity={5} />
+      </mesh>
+      <mesh ref={ring2Ref}>
+        <torusGeometry args={[8, 0.1, 16, 100]} />
+        <meshStandardMaterial color="#ff00ff" emissive="#ff00ff" emissiveIntensity={3} />
+      </mesh>
+      <mesh ref={ring3Ref}>
+        <torusGeometry args={[10, 0.1, 16, 100]} />
+        <meshStandardMaterial color="#ffff00" emissive="#ffff00" emissiveIntensity={2} />
+      </mesh>
+      <pointLight intensity={10} distance={20} color="#00ffff" />
+    </group>
   );
 }
