@@ -51,7 +51,7 @@ export default function Platforms() {
             key: `destructible-${levelIndex}`,
             position
         });
-      } else if (levelIndex > 75 && levelIndex % 5 === 0) {
+      } else if (levelIndex >= 75 && levelIndex % 3 === 0) {
         moving.push({
           key: `moving-${levelIndex}`,
           levelIndex: levelIndex,
