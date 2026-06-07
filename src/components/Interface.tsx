@@ -50,18 +50,18 @@ export default function Interface() {
             <div className="neon-line"></div>
             <p className="subtitle">NEON SPHERE CHALLENGE</p>
             <button className="btn-neon" onClick={start}>
-              <Play size={24} fill="currentColor" /> START MISSION
+              <Play size={24} fill="currentColor" /> 미션 시작
             </button>
             <div className="controls-hint">
-              <div className="control-item"><span>WASD</span> MOVE</div>
-              <div className="control-item"><span>SPACE</span> JUMP</div>
-              <div className="control-item"><span>R</span> RESPAWN</div>
-              <div className="control-item"><span>MOUSE</span> VIEW</div>
-              <div className="control-item"><span>ESC</span> PAUSE</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD</span> CHECKPOINT (TURNS <span style={{ color: '#00ff00' }}>GREEN</span>)</div>
+              <div className="control-item"><span>WASD</span> 이동</div>
+              <div className="control-item"><span>SPACE</span> 점프</div>
+              <div className="control-item"><span>R</span> 리스폰</div>
+              <div className="control-item"><span>MOUSE</span> 시점</div>
+              <div className="control-item"><span>ESC</span> 일시정지</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>황금</span> 체크포인트 (<span style={{ color: '#00ff00' }}>녹색</span>으로 변함)</div>
             </div>
             {checkpointPosition && (
-              <p className="checkpoint-msg">CHECKPOINT ACTIVE: {checkpointPosition[1].toFixed(0)}m</p>
+              <p className="checkpoint-msg">체크포인트 활성화: {checkpointPosition[1].toFixed(0)}m</p>
             )}
           </div>
         </div>
@@ -71,14 +71,14 @@ export default function Interface() {
       {phase === 'PAUSED' && (
         <div className="overlay pause-overlay">
           <div className="content">
-            <h2 className="title">PAUSED</h2>
+            <h2 className="title">일시정지</h2>
             <div className="neon-line"></div>
             <button className="btn-neon" onClick={togglePause}>
-              <Play size={24} fill="currentColor" /> RESUME
+              <Play size={24} fill="currentColor" /> 계속하기
             </button>
             <div className="controls-hint">
-              <div className="control-item"><span>ESC</span> RESUME</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>GOLD PLATFORM</span> SAVES PROGRESS (TURNS <span style={{ color: '#00ff00' }}>GREEN</span>)</div>
+              <div className="control-item"><span>ESC</span> 계속하기</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>황금 발판</span>은 진행 상황을 저장합니다 (<span style={{ color: '#00ff00' }}>녹색</span>으로 변함)</div>
             </div>
           </div>
         </div>
