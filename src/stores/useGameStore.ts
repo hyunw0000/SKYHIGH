@@ -9,6 +9,7 @@ interface GameState {
   highScore: number;
   currentLevel: number;
   checkpointPosition: [number, number, number] | null;
+  setCheckpoint: (pos: [number, number, number]) => void;
   start: () => void;
   restart: () => void;
   setGameOver: () => void;
@@ -16,7 +17,6 @@ interface GameState {
   setScore: (newScore: number) => void;
   setCurrentLevel: (level: number) => void;
   togglePause: () => void;
-  teleportPlayer: (pos: [number, number, number]) => void;
   }
 
   export const useGameStore = create<GameState>()(
@@ -26,8 +26,6 @@ interface GameState {
     highScore: Number(localStorage.getItem('sky-high-high-score')) || 0,
     currentLevel: 0,
     checkpointPosition: null,
-
-    teleportPlayer: (pos) => set({ score: pos[1], currentLevel: Math.floor(pos[1] / 4) }),
 
     start: () => set({ phase: 'PLAYING', score: 0, currentLevel: 0 }),
 
@@ -41,6 +39,7 @@ interface GameState {
     },
 
     setCheckpoint: (pos) => set({ checkpointPosition: pos }),
+
 
     setWin: () => set({ phase: 'WON' }),
 

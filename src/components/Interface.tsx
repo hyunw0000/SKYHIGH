@@ -3,23 +3,8 @@ import { Play, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Interface() {
-  const { phase, score, highScore, start, restart, togglePause, checkpointPosition, setScore, setCurrentLevel, teleportPlayer } = useGameStore();
+  const { phase, score, highScore, start, restart, togglePause, checkpointPosition } = useGameStore();
   const [notification, setNotification] = useState<string | null>(null);
-
-  // DEBUG: Temporary teleportation keys
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const teleport = (y: number) => {
-        teleportPlayer([0, y, 0]);
-        window.dispatchEvent(new CustomEvent('debug-teleport', { detail: { y } }));
-      };
-      if (e.key === '1') teleport(300);
-      if (e.key === '2') teleport(600);
-      if (e.key === '3') teleport(790); // Teleport near the end instead of 900
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [teleportPlayer]);
 
   useEffect(() => {
     const checkMilestone = (m: number, msg: string) => {

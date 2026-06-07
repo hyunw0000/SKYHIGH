@@ -39,19 +39,6 @@ const Player = forwardRef<THREE.Group>((_, ref) => {
   }, []);
 
   /**
-   * Debug: Teleportation
-   */
-  useEffect(() => {
-    const handleTeleport = (e: Event) => {
-      const y = (e as CustomEvent).detail.y;
-      body.current?.setTranslation({ x: 0, y: y + 2, z: 0 }, true);
-      body.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
-    };
-    window.addEventListener('debug-teleport', handleTeleport);
-    return () => window.removeEventListener('debug-teleport', handleTeleport);
-  }, []);
-
-  /**
    * Reset Position on Restart
    */
   useEffect(() => {
