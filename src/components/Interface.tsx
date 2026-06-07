@@ -58,7 +58,7 @@ export default function Interface() {
               <div className="control-item"><span>R</span> 리스폰</div>
               <div className="control-item"><span>MOUSE</span> 시점</div>
               <div className="control-item"><span>ESC</span> 일시정지</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>황금</span> 체크포인트 (<span style={{ color: '#00ff00' }}>녹색</span>으로 변함)</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>깃발이 있는 발판</span> 체크포인트</div>
             </div>
             {checkpointPosition && (
               <p className="checkpoint-msg">체크포인트 활성화: {checkpointPosition[1].toFixed(0)}m</p>
@@ -78,7 +78,7 @@ export default function Interface() {
             </button>
             <div className="controls-hint">
               <div className="control-item"><span>ESC</span> 계속하기</div>
-              <div className="control-item"><span style={{ color: '#ffd700' }}>황금 발판</span>은 진행 상황을 저장합니다 (<span style={{ color: '#00ff00' }}>녹색</span>으로 변함)</div>
+              <div className="control-item"><span style={{ color: '#ffd700' }}>깃발이 있는 발판</span> 체크포인트로 진행 상황 저장</div>
             </div>
           </div>
         </div>
