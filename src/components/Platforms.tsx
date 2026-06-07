@@ -60,7 +60,7 @@ export default function Platforms() {
           name: 'checkpoint',
           position,
           rotation: [0, (seed % 100) / 100 * Math.PI, 0] as [number, number, number],
-          scale: [8 * sizeMultiplier, 0.6, 8 * sizeMultiplier] as [number, number, number],
+          scale: [8, 0.6, 8] as [number, number, number],
           color: GOLDEN_COLOR,
         });
       }
