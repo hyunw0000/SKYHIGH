@@ -6,8 +6,8 @@
 
 **게임 링크** https://game-6xsw.vercel.app/
 
- 1 ## 🎵 음악 정보
-   2 - 배경음악: "Synthwave Retro 80s" by DELOSound (Pixabay)
+ ## 🎵 음악 정보
+   - 배경음악: "Synthwave Retro 80s" by DELOSound (Pixabay)
 
 ## 🚀 게임 소개
 당신은 네온 스피어(공)가 되어 끝없이 펼쳐진 공중 발판을 뛰어넘어 가장 높은 곳(정상800M)에 도달해야 합니다. 
