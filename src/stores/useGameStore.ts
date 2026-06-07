@@ -38,7 +38,7 @@ interface GameState {
       }));
     },
 
-    setCheckpoint: (pos) => set({ checkpointPosition: pos }),
+    setCheckpoint: (pos: [number, number, number]) => set({ checkpointPosition: pos }),
 
 
     setWin: () => set({ phase: 'WON' }),
