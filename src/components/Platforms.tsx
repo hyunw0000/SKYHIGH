@@ -8,7 +8,6 @@ import DestructiblePlatform from './DestructiblePlatform';
 import HiddenJumpPlatform from './HiddenJumpPlatform';
 import HintSign from './HintSign';
 
-const PLATFORM_COUNT = 70; 
 const SPACING = 4;
 
 const NEON_COLORS = [
