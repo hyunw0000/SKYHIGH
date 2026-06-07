@@ -9,6 +9,7 @@ interface GameState {
   highScore: number;
   currentLevel: number;
   checkpointPosition: [number, number, number] | null;
+  isMusicMuted: boolean;
   setCheckpoint: (pos: [number, number, number]) => void;
   start: () => void;
   restart: () => void;
@@ -17,6 +18,7 @@ interface GameState {
   setScore: (newScore: number) => void;
   setCurrentLevel: (level: number) => void;
   togglePause: () => void;
+  toggleMusic: () => void;
   }
 
   export const useGameStore = create<GameState>()(
@@ -26,6 +28,7 @@ interface GameState {
     highScore: Number(localStorage.getItem('sky-high-high-score')) || 0,
     currentLevel: 0,
     checkpointPosition: null,
+    isMusicMuted: false,
 
     start: () => set({ phase: 'PLAYING', score: 0, currentLevel: 0 }),
 
@@ -48,6 +51,9 @@ interface GameState {
       if (state.phase === 'PAUSED') return { phase: 'PLAYING' };
       return state;
     }),
+
+    toggleMusic: () => set((state) => ({ isMusicMuted: !state.isMusicMuted })),
+
     
     setGameOver: () => set((state) => {
       if (state.phase === 'PLAYING') {

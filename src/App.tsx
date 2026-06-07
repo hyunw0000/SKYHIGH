@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { KeyboardControls } from '@react-three/drei';
 import Experience from './components/Experience';
 import Interface from './components/Interface';
+import AudioPlayer from './components/AudioPlayer';
 import * as THREE from 'three';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       ]}
     >
       <div style={{ width: '100vw', height: '100vh', background: '#000' }}>
+        <AudioPlayer />
         <Canvas
           shadows={{ type: THREE.PCFShadowMap }}
           gl={{ antialias: true }}

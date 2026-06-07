@@ -3,7 +3,7 @@ import { Play, RotateCcw, Trophy, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function Interface() {
-  const { phase, score, highScore, start, restart, togglePause, checkpointPosition } = useGameStore();
+  const { phase, score, highScore, start, restart, togglePause, checkpointPosition, isMusicMuted, toggleMusic } = useGameStore();
   const [notification, setNotification] = useState<string | null>(null);
 
   useEffect(() => {
@@ -75,6 +75,9 @@ export default function Interface() {
             <div className="neon-line"></div>
             <button className="btn-neon" onClick={togglePause}>
               <Play size={24} fill="currentColor" /> 계속하기
+            </button>
+            <button className="btn-neon" onClick={toggleMusic} style={{ marginTop: '10px', background: '#333' }}>
+              {isMusicMuted ? '음악 켜기' : '음악 끄기'}
             </button>
             <div className="controls-hint">
               <div className="control-item"><span>ESC</span> 계속하기</div>
