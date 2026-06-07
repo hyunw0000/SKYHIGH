@@ -1,7 +1,9 @@
 # Sky High: Neon Sphere Challenge
 
 우주 공간 속에서 펼쳐지는 스릴 넘치는 3D 플랫포머 게임입니다! 네온 빛으로 가득 찬 세상에서 정상까지 올라가 보세요.
+
 **유튜브 링크** https://www.youtube.com/watch?v=TuGmblXyGxk
+
 **게임 링크** https://game-6xsw.vercel.app/
 
 ## 🚀 게임 소개
